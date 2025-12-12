@@ -6,6 +6,7 @@
 
 | 파일/디렉토리 | 설명 |
 | :--- | :--- |
+| `public/` | 정적 에셋(이미지, 로고 등)이 위치하는 디렉토리입니다. |
 | `components/` | 애플리케이션에서 사용되는 모든 React UI 컴포넌트가 포함되어 있습니다. |
 | `components/forms/` | 입력 폼 관련 컴포넌트 (SystemConfig, EconomicConfig, Selectors 등)가 위치합니다. |
 | `components/dashboard/` | 대시보드 시각화 컴포넌트 (KPICard, SafetyGauge 등)가 위치합니다. |

@@ -1,9 +1,28 @@
 
-import { 
-  PVModule, 
-  Inverter, 
-  SystemConfig, 
-  CalculationResult, 
+/**
+ * Solar Calculator Utilities
+ * 
+ * 태양광 발전 시스템의 엔지니어링 계산 및 경제성 분석을 수행하는 핵심 유틸리티 모음입니다.
+ * 
+ * 주요 기능:
+ * 1. 엔지니어링 계산 (calculateSolarSystem):
+ *    - 온도 보정 전압 계산 (Voc, Vmp)
+ *    - 스트링 설계 (직/병렬 구성)
+ *    - 인버터 매칭 및 안전성 검토 (전압, 전류, 전압강하 등)
+ *    - BOM (자재명세서) 자동 생성
+ * 
+ * 2. 경제성 분석 (calculateEconomics):
+ *    - 20년간의 발전량 예측 (모듈 효율 저하 반영)
+ *    - 현금 흐름 분석 (매출, 운영비, 금융비용, 세금 등)
+ *    - 투자 지표 산출 (ROI, NPV, LCOE, 회수기간)
+ *    - 민감도 분석 및 환경적 기대효과 계산
+ */
+
+import {
+  PVModule,
+  Inverter,
+  SystemConfig,
+  CalculationResult,
   TempCalculatedValues,
   ArrayConfiguration,
   SafetyCheck,
@@ -38,8 +57,8 @@ export const readTextFile = (file: File): Promise<string> => {
  * [온도 보정 전압 계산 함수]
  */
 export const calculateTempVoltage = (
-  voltage: number, 
-  tempCoeff: number, 
+  voltage: number,
+  tempCoeff: number,
   targetTemp: number
 ): number => {
   return voltage * (1 + (tempCoeff / 100) * (targetTemp - 25));
@@ -124,7 +143,7 @@ export const generateBOM = (
       description: "내식성이 우수한 고내식 합금 도금 강판 사용. 설계 풍속 30m/s, 지진구역 I등급 기준 구조 계산 적용."
     }
   });
-  
+
   bom.push({
     category: '구조물공사',
     item: '모듈 클램프 및 볼트류',
@@ -133,8 +152,8 @@ export const generateBOM = (
     unit: '식(Lot)',
     remark: '모듈 고정용 하드웨어 일체',
     details: {
-       material: "Stainless Steel 304 (STS304)",
-       description: "부식 방지를 위한 스테인리스 스틸 재질의 클램프, 볼트, 너트, 와셔 세트. 풀림 방지 스프링 와셔 포함."
+      material: "Stainless Steel 304 (STS304)",
+      description: "부식 방지를 위한 스테인리스 스틸 재질의 클램프, 볼트, 너트, 와셔 세트. 풀림 방지 스프링 와셔 포함."
     }
   });
 
@@ -174,7 +193,7 @@ export const generateBOM = (
     category: '전기공사 (DC)',
     item: 'DC 접속반/보호함 (Junction Box)',
     spec: 'PC/ABS 외함 (IP65), DC 개폐기 포함',
-    qty: inverterCount, 
+    qty: inverterCount,
     unit: '면(EA)',
     remark: '인버터 입력단 개별 차단 및 보호용',
     details: {
@@ -217,13 +236,13 @@ export const generateBOM = (
     category: '전기공사 (AC)',
     item: '전력 케이블 (Power Cable)',
     spec: `TFR-CV 0.6/1kV 1C/3C (허용전류 계산 기반 선정)`,
-    qty: inverterCount * 30, 
+    qty: inverterCount * 30,
     unit: 'm',
     remark: '난연성 트레이용 케이블',
     details: {
-       certification: "KS C IEC 60502-1",
-       material: "Annealed Copper / XLPE / PVC (Tray Flame Retardant)",
-       description: "난연성 가교 폴리에틸렌 절연 비닐 시스 케이블. 트레이 포설 시 화재 확산 방지."
+      certification: "KS C IEC 60502-1",
+      material: "Annealed Copper / XLPE / PVC (Tray Flame Retardant)",
+      description: "난연성 가교 폴리에틸렌 절연 비닐 시스 케이블. 트레이 포설 시 화재 확산 방지."
     }
   });
 
@@ -243,8 +262,8 @@ export const generateBOM = (
 
   // 7. 접지 공사 (Earthing - 상세화)
   const gvLength = Math.ceil(
-    (configuration.totalModules * 1.5) + 
-    (inverterCount * 15) + 
+    (configuration.totalModules * 1.5) +
+    (inverterCount * 15) +
     (inverterCount * config.cableLength)
   );
 
@@ -296,8 +315,8 @@ export const generateBOM = (
     unit: '대',
     remark: '효율 관리기자재, 혼촉방지판 포함',
     details: {
-       certification: "KS C 4311 (고효율)",
-       description: "난연성, 자기소화성 몰드 변압기. 저손실형 코어 적용. 온도 감지 센서 포함."
+      certification: "KS C 4311 (고효율)",
+      description: "난연성, 자기소화성 몰드 변압기. 저손실형 코어 적용. 온도 감지 센서 포함."
     }
   });
 
@@ -372,13 +391,13 @@ export const calculateSolarSystem = (
   inverter: Inverter,
   config: SystemConfig
 ): CalculationResult => {
-  
+
   // 1. 온도 보정 전압 산출
   const vocWinter = calculateTempVoltage(module.voc, module.tempCoefficients.voc, config.ambientTempWinter);
   const vocSummer = calculateTempVoltage(module.voc, module.tempCoefficients.voc, config.ambientTempSummer);
   const vmpWinterCorrected = calculateTempVoltage(module.vmp, module.tempCoefficients.voc, config.ambientTempWinter);
   const vmpSummer = calculateTempVoltage(module.vmp, module.tempCoefficients.voc, config.ambientTempSummer);
-  
+
   const tempValues: TempCalculatedValues = {
     vocWinter,
     vocSummer,
@@ -389,26 +408,26 @@ export const calculateSolarSystem = (
   // 2. 직렬 모듈 수 산정
   const maxSeriesByVoltage = vocWinter > 0 ? Math.floor(inverter.maxInputVoltage / vocWinter) : 0;
   const minSeriesByVoltage = vmpSummer > 0 ? Math.ceil(inverter.minMpptVoltage / vmpSummer) : 0;
-  
+
   const totalModulesNeeded = module.pmax > 0 ? Math.ceil((config.targetCapacity * 1000) / module.pmax) : 0;
-  
+
   let optimalSeries = maxSeriesByVoltage;
   if (optimalSeries < minSeriesByVoltage) {
-    optimalSeries = 0; 
+    optimalSeries = 0;
   }
 
   // 3. 병렬 회로 수 및 시스템 용량 산정
   const parallelStrings = optimalSeries > 0 ? Math.ceil(totalModulesNeeded / optimalSeries) : 0;
   const actualTotalModules = parallelStrings * optimalSeries;
 
-  const numInverters = inverter.ratedOutputPower > 0 
-    ? Math.ceil(config.targetCapacity / inverter.ratedOutputPower) 
+  const numInverters = inverter.ratedOutputPower > 0
+    ? Math.ceil(config.targetCapacity / inverter.ratedOutputPower)
     : 0;
 
   const bifacialFactor = 1 + ((config.bifacialGain || 0) / 100);
   const totalDcCapacity = ((actualTotalModules * module.pmax) / 1000) * bifacialFactor;
   const totalAcCapacity = numInverters * inverter.ratedOutputPower;
-  
+
   const dcAcRatio = totalAcCapacity > 0 ? totalDcCapacity / totalAcCapacity : 0;
 
   const configuration: ArrayConfiguration = {
@@ -422,18 +441,18 @@ export const calculateSolarSystem = (
   const stringVoltageWinter = optimalSeries * vocWinter;
   const stringVoltageSummer = optimalSeries * vmpSummer;
   const stringVocSummer = optimalSeries * vocSummer;
-  const stringMaxPowerVoltageWinter = optimalSeries * vmpWinterCorrected; 
-  const stringCurrent = module.imp; 
-  
+  const stringMaxPowerVoltageWinter = optimalSeries * vmpWinterCorrected;
+  const stringCurrent = module.imp;
+
   const vDrop = calculateVoltageDrop(stringCurrent, config.cableLength, config.cableCrossSection);
-  const stringOperatingVoltage = optimalSeries * module.vmp; 
+  const stringOperatingVoltage = optimalSeries * module.vmp;
   const vDropPercent = stringOperatingVoltage > 0 ? (vDrop / stringOperatingVoltage) * 100 : 0;
 
   const safety: SafetyCheck = {
     isVocSafe: stringVoltageWinter < inverter.maxInputVoltage,
     isVmpMinSafe: (stringVoltageSummer - vDrop) > inverter.minMpptVoltage,
     isVmpMaxSafe: stringMaxPowerVoltageWinter < inverter.maxMpptVoltage,
-    isCurrentSafe: module.isc < inverter.maxShortCircuitCurrent, 
+    isCurrentSafe: module.isc < inverter.maxShortCircuitCurrent,
     isStartUpSafe: stringVocSummer > inverter.startUpVoltage,
     voltageDrop: vDropPercent,
     isVoltageDropSafe: vDropPercent < 3.0
@@ -461,10 +480,10 @@ export const calculateSolarSystem = (
 export const parseTMYCSV = (csvText: string): TMYData[] => {
   const lines = csvText.split(/\r?\n/);
   const data: TMYData[] = [];
-  
+
   let headerIndex = -1;
   let headers: string[] = [];
-  
+
   for (let i = 0; i < Math.min(lines.length, 20); i++) {
     const line = lines[i].trim();
     if (line.includes('년') && line.includes('월') && line.includes('일') && line.includes('시간')) {
@@ -480,7 +499,7 @@ export const parseTMYCSV = (csvText: string): TMYData[] => {
   const idxMonth = headers.findIndex(h => h.includes('월'));
   const idxDay = headers.findIndex(h => h.includes('일'));
   const idxHour = headers.findIndex(h => h.includes('시간'));
-  
+
   const idxWind = headers.findIndex(h => h.includes('풍속') && !h.includes('불확도'));
   const idxGHI = headers.findIndex(h => h.includes('전일사량') && !h.includes('불확도'));
 
@@ -496,7 +515,7 @@ export const parseTMYCSV = (csvText: string): TMYData[] => {
     const line = lines[i].trim();
     if (!line) continue;
     const cols = line.split(',');
-    
+
     if (cols.length < headers.length) continue;
 
     const tmy: TMYData = {
@@ -509,7 +528,7 @@ export const parseTMYCSV = (csvText: string): TMYData[] => {
       ghi: parseFloat(cols[idxGHI]) || 0,
       ghiUncertainty: idxGHIUnc > -1 ? parseFloat(cols[idxGHIUnc]) || 0 : 0
     };
-    
+
     if (tmy.month >= 1 && tmy.month <= 12) {
       data.push(tmy);
     }
@@ -525,7 +544,7 @@ const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
  * [환경적 기대효과 계산]
  */
 const calculateEnvironmentalImpact = (annualGenerationMWh: number): EnvironmentalImpact => {
-  const CO2_FACTOR = 0.4594; 
+  const CO2_FACTOR = 0.4594;
   const PINE_TREE_FACTOR = 0.0066;
   const OIL_TOE_FACTOR = 0.215;
 
@@ -583,7 +602,7 @@ export const calculateEconomics = (
 ): SimulationResult => {
   const years = 20;
   const yearlyData: YearlyPrediction[] = [];
-  
+
   let totalGeneration = 0;
   let totalGrossRevenue = 0;
   let totalMaintenanceCost = 0;
@@ -592,7 +611,7 @@ export const calculateEconomics = (
 
   // 1. 초기 투자비 (CAPEX)
   const totalConstructionCost = systemCapacityKw * econConfig.installationCostPerKw;
-  
+
   // 2. 자금 조달 계획
   const equityRatio = (econConfig.equityPercent ?? 100) / 100;
   const equityAmount = totalConstructionCost * equityRatio;
@@ -617,15 +636,15 @@ export const calculateEconomics = (
   } else if (loanAmount > 0 && loanRate === 0 && amortizationPeriod > 0) {
     amortizationPayment = loanAmount / amortizationPeriod;
   }
-  
-  let cumulativeCashFlow = -equityAmount; 
+
+  let cumulativeCashFlow = -equityAmount;
   let paybackPeriod = 0;
   let paybackFound = false;
 
   // [New] 상세 손실 계수 적용 로직
   const lossFactors = econConfig.lossFactors || DEFAULT_LOSS_FACTORS;
   const { lossData } = calculateDetailedPR(lossFactors);
-  
+
   // IMPORTANT: 사용자 입력 종합 효율을 최우선 적용 (상세 손실 계수는 차트용으로만 사용)
   const systemEfficiencyFactor = econConfig.systemEfficiency / 100;
 
@@ -635,7 +654,7 @@ export const calculateEconomics = (
 
   // 피크 컷 (Clipping Loss) - 완전 제거 (0% 손실 고정)
   const clippingLossPercent = 0;
-  const clippingFactor = 1.0; 
+  const clippingFactor = 1.0;
 
   // --- 발전량 계산 전략 ---
   let baseAnnualGeneration = 0;
@@ -661,33 +680,33 @@ export const calculateEconomics = (
     });
 
     monthlyAvgInsolation = monthlyGHISum.map((sum, i) => (sum / 1000) / DAYS_IN_MONTH[i]);
-    for(let h=0; h<24; h++) if (hourlyCount[h] > 0) hourlyGeneration[h] = hourlyGeneration[h] / 365;
+    for (let h = 0; h < 24; h++) if (hourlyCount[h] > 0) hourlyGeneration[h] = hourlyGeneration[h] / 365;
     baseAnnualGeneration = monthlyGeneration.reduce((a, b) => a + b, 0);
 
   } else if (econConfig.analysisMode === 'detailed' && econConfig.monthlyInsolation.length === 12) {
     monthlyAvgInsolation = [...econConfig.monthlyInsolation];
     econConfig.monthlyInsolation.forEach((hours, idx) => {
-       // ClippingFactor(1.0) 적용
-       const monthlyGen = systemCapacityKw * hours * DAYS_IN_MONTH[idx] * systemEfficiencyFactor * clippingFactor;
-       monthlyGeneration[idx] = monthlyGen;
+      // ClippingFactor(1.0) 적용
+      const monthlyGen = systemCapacityKw * hours * DAYS_IN_MONTH[idx] * systemEfficiencyFactor * clippingFactor;
+      monthlyGeneration[idx] = monthlyGen;
     });
     baseAnnualGeneration = monthlyGeneration.reduce((a, b) => a + b, 0);
-    for(let h=6; h<=19; h++) {
-       const bellCurve = Math.sin(((h - 6) / 13) * Math.PI); 
-       hourlyGeneration[h] = (baseAnnualGeneration / 365) * (bellCurve / 8); 
+    for (let h = 6; h <= 19; h++) {
+      const bellCurve = Math.sin(((h - 6) / 13) * Math.PI);
+      hourlyGeneration[h] = (baseAnnualGeneration / 365) * (bellCurve / 8);
     }
   } else {
     monthlyAvgInsolation = new Array(12).fill(econConfig.dailyInsolation);
     // ClippingFactor(1.0) 적용
     baseAnnualGeneration = systemCapacityKw * econConfig.dailyInsolation * 365 * systemEfficiencyFactor * clippingFactor;
     monthlyGeneration.forEach((_, idx) => {
-       monthlyGeneration[idx] = (baseAnnualGeneration / 365) * DAYS_IN_MONTH[idx];
+      monthlyGeneration[idx] = (baseAnnualGeneration / 365) * DAYS_IN_MONTH[idx];
     });
   }
 
   // --- 20년 현금 흐름 분석 루프 ---
   let remainingLoanBalance = loanAmount;
-  
+
   // NPV 계산을 위한 할인율 (Discount Rate)
   // 대출 이자율을 할인율의 대용치로 사용하거나, 기본 4.5% 사회적 할인율 적용
   const discountRate = loanRate > 0 ? loanRate : 0.045;
@@ -701,16 +720,16 @@ export const calculateEconomics = (
     // baseAnnualGeneration에 이미 clippingFactor(1.0)이 포함되어 있다면 중복 적용 안함.
     // 하지만 위 로직상 baseAnnualGeneration 계산 시 clippingFactor를 곱했으므로, 
     // 여기서는 efficiencyRate만 곱하면 됨.
-    const annualGen = baseAnnualGeneration * efficiencyRate; 
+    const annualGen = baseAnnualGeneration * efficiencyRate;
     const monthlyAvgGen = annualGen / 12;
 
-    const revenueSMP = annualGen * econConfig.smp; 
-    const revenueREC = (annualGen / 1000) * econConfig.recPrice * econConfig.recWeight; 
+    const revenueSMP = annualGen * econConfig.smp;
+    const revenueREC = (annualGen / 1000) * econConfig.recPrice * econConfig.recWeight;
     const grossRev = revenueSMP + revenueREC;
 
     const inflationFactor = Math.pow(1 + inflation, year - 1);
     const maintenanceCost = (baseAnnualMaintenanceCost + baseAnnualLeaseCost) * inflationFactor;
-    
+
     let loanPaymentThisYear = 0;
     let interestThisYear = 0;
     let principalPaymentThisYear = 0;
@@ -724,7 +743,7 @@ export const calculateEconomics = (
         interestThisYear = remainingLoanBalance * loanRate;
         let payment = amortizationPayment;
         if (remainingLoanBalance + interestThisYear < payment + 1) {
-           payment = remainingLoanBalance + interestThisYear;
+          payment = remainingLoanBalance + interestThisYear;
         }
         loanPaymentThisYear = payment;
         principalPaymentThisYear = loanPaymentThisYear - interestThisYear;
@@ -784,10 +803,10 @@ export const calculateEconomics = (
   }
 
   // ROI 계산
-  const totalNetProfit = cumulativeCashFlow + equityAmount; 
+  const totalNetProfit = cumulativeCashFlow + equityAmount;
   const investmentBase = equityAmount > 0 ? equityAmount : totalConstructionCost;
-  const roi = investmentBase > 0 
-    ? ((yearlyData[years-1].cumulativeCashFlow) / investmentBase) * 100 
+  const roi = investmentBase > 0
+    ? ((yearlyData[years - 1].cumulativeCashFlow) / investmentBase) * 100
     : 0;
 
   // LCOE 계산 (Levelized Cost of Energy)
@@ -802,48 +821,48 @@ export const calculateEconomics = (
   const calculateScenario = (smpMod: number, recMod: number, name: string): SensitivityResult => {
     let scenCumulative = -equityAmount;
     let scenLoanBal = loanAmount;
-    
+
     for (let y = 1; y <= years; y++) {
-       const deg = (econConfig.annualDegradation / 100) * (y - 1);
-       const gen = baseAnnualGeneration * (1 - deg); // clippingFactor is 1.0
-       
-       const rev = (gen * econConfig.smp * smpMod) + ((gen/1000) * econConfig.recPrice * econConfig.recWeight * recMod);
-       const inf = Math.pow(1 + inflation, y - 1);
-       const cost = (baseAnnualMaintenanceCost + baseAnnualLeaseCost) * inf;
-       
-       let interest = 0; 
-       let principal = 0;
-       
-       if (loanAmount > 0 && scenLoanBal > 0 && y <= loanTerm) {
-          if (y <= gracePeriod) {
-             interest = scenLoanBal * loanRate;
-          } else {
-             interest = scenLoanBal * loanRate;
-             let pay = amortizationPayment;
-             if (scenLoanBal + interest < pay + 1) pay = scenLoanBal + interest;
-             principal = pay - interest;
-             scenLoanBal -= principal;
-          }
-       }
-       
-       const dep = y <= depPeriod ? annualDepreciation : 0;
-       let taxInc = rev - cost - interest - dep;
-       if (taxInc < 0) taxInc = 0;
-       const tax = taxInc * taxRate;
-       
-       const net = rev - cost - interest - principal - tax;
-       scenCumulative += net;
+      const deg = (econConfig.annualDegradation / 100) * (y - 1);
+      const gen = baseAnnualGeneration * (1 - deg); // clippingFactor is 1.0
+
+      const rev = (gen * econConfig.smp * smpMod) + ((gen / 1000) * econConfig.recPrice * econConfig.recWeight * recMod);
+      const inf = Math.pow(1 + inflation, y - 1);
+      const cost = (baseAnnualMaintenanceCost + baseAnnualLeaseCost) * inf;
+
+      let interest = 0;
+      let principal = 0;
+
+      if (loanAmount > 0 && scenLoanBal > 0 && y <= loanTerm) {
+        if (y <= gracePeriod) {
+          interest = scenLoanBal * loanRate;
+        } else {
+          interest = scenLoanBal * loanRate;
+          let pay = amortizationPayment;
+          if (scenLoanBal + interest < pay + 1) pay = scenLoanBal + interest;
+          principal = pay - interest;
+          scenLoanBal -= principal;
+        }
+      }
+
+      const dep = y <= depPeriod ? annualDepreciation : 0;
+      let taxInc = rev - cost - interest - dep;
+      if (taxInc < 0) taxInc = 0;
+      const tax = taxInc * taxRate;
+
+      const net = rev - cost - interest - principal - tax;
+      scenCumulative += net;
     }
-    
+
     const scenProfit = scenCumulative + equityAmount;
     const scenRoi = investmentBase > 0 ? (scenCumulative / investmentBase) * 100 : 0;
-    
+
     return {
-       scenarioName: name,
-       smpVariation: (smpMod - 1) * 100,
-       netProfit: Math.round(scenProfit),
-       roi: parseFloat(scenRoi.toFixed(1)),
-       paybackPeriod: 0 
+      scenarioName: name,
+      smpVariation: (smpMod - 1) * 100,
+      netProfit: Math.round(scenProfit),
+      roi: parseFloat(scenRoi.toFixed(1)),
+      paybackPeriod: 0
     };
   };
 
@@ -857,7 +876,7 @@ export const calculateEconomics = (
     yearlyData,
     totalGeneration20y: totalGeneration / 1000,
     totalGrossRevenue,
-    totalNetProfit: yearlyData[years-1].cumulativeCashFlow,
+    totalNetProfit: yearlyData[years - 1].cumulativeCashFlow,
     totalConstructionCost,
     totalLoanInterest,
     totalTax,
@@ -884,7 +903,7 @@ export const generateConfigurationSummary = (
   configuration: ArrayConfiguration,
   inverterCount: number
 ): string => {
-   if (configuration.seriesModules <= 0) {
+  if (configuration.seriesModules <= 0) {
     return "설정된 조건으로는 유효한 어레이를 구성할 수 없습니다. 모듈/인버터 사양 또는 목표 용량을 확인해주세요.";
   }
   return `본 시스템은 ${module.manufacturer} ${module.model} (${module.pmax}W) 모듈 ${configuration.seriesModules}매를 직렬(Series) 연결하고, 총 ${configuration.parallelStrings}개의 병렬(Parallel) 스트링으로 구성됩니다. 전체 어레이는 ${inverter.manufacturer} ${inverter.model} (${inverter.ratedOutputPower}kW) 인버터 ${inverterCount}대에 연결되어 최적의 발전 효율을 제공합니다.`;
@@ -913,7 +932,7 @@ export const calculateInverterGroups = (
       const gA_Strings = baseStrings + 1;
       const gA_Modules = gA_Strings * seriesModules;
       const gA_Capacity = (gA_Modules * module.pmax) / 1000;
-      
+
       groups.push({
         idRange: remainder === 1 ? `Inv #1` : `Inv #1 ~ #${remainder}`,
         count: remainder,
@@ -934,7 +953,7 @@ export const calculateInverterGroups = (
       const gB_Capacity = (gB_Modules * module.pmax) / 1000;
 
       groups.push({
-        idRange: remainder > 0 
+        idRange: remainder > 0
           ? (inverterCount - remainder === 1 ? `Inv #${inverterCount}` : `Inv #${remainder + 1} ~ #${inverterCount}`)
           : (inverterCount === 1 ? `Inv #1` : `Inv #1 ~ #${inverterCount}`),
         count: inverterCount - remainder,

@@ -45,9 +45,12 @@ const ReportHeader = ({ title, subTitle }: { title: string, subTitle: string }) 
             <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight uppercase">{title}</h1>
             <p className="text-sm text-slate-500 font-semibold mt-1">{subTitle}</p>
          </div>
-         <div className="text-right">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Solar Array Architect</div>
-            <div className="text-[10px] text-slate-300">Professional Engineering Report</div>
+         <div className="flex items-center gap-3">
+            <img src="/report_logo.jpg" alt="Logo" className="h-10 w-auto object-contain" />
+            <div className="text-right border-l border-slate-300 pl-3">
+               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Solar Array Architect</div>
+               <div className="text-[10px] text-slate-300">Professional Engineering Report</div>
+            </div>
          </div>
       </div>
    </div>
@@ -85,10 +88,10 @@ const PageOne = ({ config, module, inverter, summaryText, date, pageNum, totalPa
             <p className="text-xs text-slate-500 font-medium">설계 기준일: {date}</p>
          </div>
          <div className="text-right">
-            <div className="text-5xl font-black text-blue-600 tracking-tighter">
+            <div className="text-5xl font-black text-blue-600 tracking-tighter mb-2">
                {config.targetCapacity} <span className="text-2xl text-slate-400 font-medium">kW</span>
             </div>
-            <div className="text-xs text-slate-400 font-bold uppercase mt-1">Target Installation Capacity</div>
+            <div className="text-xs text-slate-400 font-bold uppercase">Target Installation Capacity</div>
          </div>
       </div>
 
@@ -110,39 +113,51 @@ const PageOne = ({ config, module, inverter, summaryText, date, pageNum, totalPa
          <div>
             <h3 className="text-sm font-bold text-slate-900 uppercase border-b border-slate-900 pb-2 mb-4">주요 기자재 (Main Equipment)</h3>
 
-            {/* Module Card */}
-            <div className="flex gap-4 mb-4 border border-slate-100 rounded p-3 shadow-sm">
-               <div className="w-16 h-20 bg-slate-100 rounded border border-slate-200 flex-shrink-0 overflow-hidden flex items-center justify-center">
+            {/* Module Card - Table Layout for PDF Stability */}
+            <div className="mb-4 border border-slate-100 rounded p-3 shadow-sm bg-white flex items-center">
+               <div className="w-16 h-20 bg-slate-50 rounded border border-slate-200 flex-shrink-0 overflow-hidden flex items-center justify-center mr-4">
                   {module.imageUrl ? <img src={module.imageUrl} className="w-full h-full object-cover" alt="Module" crossOrigin="anonymous" /> : <span className="text-[9px] text-slate-400">IMG</span>}
                </div>
-               <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase">PV Module</div>
-                  <div className="text-sm font-bold text-slate-900 truncate" title={module.model}>{module.model}</div>
-                  <div className="text-[10px] text-slate-500 mb-1 truncate">{module.manufacturer}</div>
-                  <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
-                     <span className="text-[10px] text-slate-500">Pmax: <b className="text-slate-800">{module.pmax}W</b></span>
-                     <span className="text-[10px] text-slate-500">Eff: <b className="text-slate-800">{module.efficiency}%</b></span>
-                     <span className="text-[10px] text-slate-500">Voc: <b className="text-slate-800">{module.voc}V</b></span>
-                     <span className="text-[10px] text-slate-500">Isc: <b className="text-slate-800">{module.isc}A</b></span>
-                  </div>
+               <div className="flex-1">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase leading-none mb-1">PV Module</div>
+                  <div className="text-sm font-bold text-slate-900 leading-tight mb-1 break-words" title={module.model}>{module.model}</div>
+                  <div className="text-[10px] text-slate-500 mb-2 leading-none">{module.manufacturer}</div>
+                  <table className="w-full text-[10px] text-slate-500 table-fixed">
+                     <tbody>
+                        <tr>
+                           <td className="w-1/2 pr-1 whitespace-nowrap">Pmax: <b className="text-slate-800">{module.pmax}W</b></td>
+                           <td className="w-1/2 whitespace-nowrap">Eff: <b className="text-slate-800">{module.efficiency}%</b></td>
+                        </tr>
+                        <tr>
+                           <td className="pr-1 whitespace-nowrap">Voc: <b className="text-slate-800">{module.voc}V</b></td>
+                           <td className="whitespace-nowrap">Isc: <b className="text-slate-800">{module.isc}A</b></td>
+                        </tr>
+                     </tbody>
+                  </table>
                </div>
             </div>
 
-            {/* Inverter Card */}
-            <div className="flex gap-4 border border-slate-100 rounded p-3 shadow-sm">
-               <div className="w-16 h-20 bg-slate-100 rounded border border-slate-200 flex-shrink-0 overflow-hidden flex items-center justify-center">
+            {/* Inverter Card - Table Layout for PDF Stability */}
+            <div className="border border-slate-100 rounded p-3 shadow-sm bg-white flex items-center">
+               <div className="w-16 h-20 bg-slate-50 rounded border border-slate-200 flex-shrink-0 overflow-hidden flex items-center justify-center mr-4">
                   {inverter.imageUrl ? <img src={inverter.imageUrl} className="w-full h-full object-contain" alt="Inv" crossOrigin="anonymous" /> : <span className="text-[9px] text-slate-400">IMG</span>}
                </div>
-               <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase">Inverter</div>
-                  <div className="text-sm font-bold text-slate-900 truncate" title={inverter.model}>{inverter.model}</div>
-                  <div className="text-[10px] text-slate-500 mb-1 truncate">{inverter.manufacturer}</div>
-                  <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
-                     <span className="text-[10px] text-slate-500">Output: <b className="text-slate-800">{inverter.ratedOutputPower}kW</b></span>
-                     <span className="text-[10px] text-slate-500">Eff: <b className="text-slate-800">{inverter.efficiency}%</b></span>
-                     <span className="text-[10px] text-slate-500">Vmax: <b className="text-slate-800">{inverter.maxInputVoltage}V</b></span>
-                     <span className="text-[10px] text-slate-500">MPPT: <b className="text-slate-800">{inverter.mpptCount}Ch</b></span>
-                  </div>
+               <div className="flex-1">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase leading-none mb-1">Inverter</div>
+                  <div className="text-sm font-bold text-slate-900 leading-tight mb-1 break-words" title={inverter.model}>{inverter.model}</div>
+                  <div className="text-[10px] text-slate-500 mb-2 leading-none">{inverter.manufacturer}</div>
+                  <table className="w-full text-[10px] text-slate-500 table-fixed">
+                     <tbody>
+                        <tr>
+                           <td className="w-1/2 pr-1 whitespace-nowrap">Output: <b className="text-slate-800">{inverter.ratedOutputPower}kW</b></td>
+                           <td className="w-1/2 whitespace-nowrap">Eff: <b className="text-slate-800">{inverter.efficiency}%</b></td>
+                        </tr>
+                        <tr>
+                           <td className="pr-1 whitespace-nowrap">Vmax: <b className="text-slate-800">{inverter.maxInputVoltage}V</b></td>
+                           <td className="whitespace-nowrap">MPPT: <b className="text-slate-800">{inverter.mpptCount}Ch</b></td>
+                        </tr>
+                     </tbody>
+                  </table>
                </div>
             </div>
          </div>
@@ -515,54 +530,56 @@ const PageGenerationData = ({ sim, config, econ, pageNum, totalPages }: { sim: S
          <ReportHeader title="발전 데이터 상세" subTitle="Generation Data & Loss Diagram" />
 
          {/* Monthly Data Table */}
-         <div className="mb-8">
-            <h3 className="text-xs font-bold text-slate-900 uppercase mb-3 border-l-4 border-slate-900 pl-2">월별 상세 데이터 (Monthly Data)</h3>
-            <table className="w-full text-[10px] text-right border-collapse border-t-2 border-slate-800">
-               <thead className="bg-slate-100 font-bold text-slate-700">
-                  <tr>
-                     <th className="py-2 px-2 text-center">월</th>
-                     <th className="py-2 px-2">일사량 (hr)</th>
-                     <th className="py-2 px-2">발전량 (kWh)</th>
-                     <th className="py-2 px-2 text-slate-500">SMP 수익</th>
-                     <th className="py-2 px-2 text-slate-500">REC 수익</th>
-                     <th className="py-2 px-2 text-blue-700">총 예상 수익</th>
-                  </tr>
-               </thead>
-               <tbody className="divide-y divide-slate-100">
-                  {monthlyData.map((row) => {
-                     const smpRev = row.gen * econ.smp;
-                     const recRev = (row.gen / 1000) * econ.recPrice * econ.recWeight;
-                     return (
-                        <tr key={row.month}>
-                           <td className="py-2 px-2 text-center font-bold">{row.month}월</td>
-                           <td className="py-2 px-2 text-slate-600">{row.insolation.toFixed(2)}</td>
-                           <td className="py-2 px-2 font-bold text-slate-800">{row.gen.toLocaleString()}</td>
-                           <td className="py-2 px-2 text-slate-500">{formatMoney(smpRev)}</td>
-                           <td className="py-2 px-2 text-slate-500">{formatMoney(recRev)}</td>
-                           <td className="py-2 px-2 font-bold text-blue-700">{formatMoney(smpRev + recRev)}</td>
-                        </tr>
-                     );
-                  })}
-                  <tr className="bg-slate-50 font-bold border-t border-slate-300">
-                     <td className="py-2 px-2 text-center">합계</td>
-                     <td className="py-2 px-2">-</td>
-                     <td className="py-2 px-2 text-slate-900">{sim.yearlyData[0]?.annualGeneration.toLocaleString() || 0}</td>
-                     <td className="py-2 px-2 text-slate-900" colSpan={3}>{formatMoney(sim.yearlyData[0]?.grossRevenue || 0)}</td>
-                  </tr>
-               </tbody>
-            </table>
+         <div className="mb-2">
+            <h3 className="text-xs font-bold text-slate-900 uppercase mb-2 border-l-4 border-slate-900 pl-2">월별 상세 데이터 (Monthly Data)</h3>
+            <div className="border border-slate-200 rounded-lg overflow-hidden">
+               <table className="w-full text-[10px] text-right border-collapse">
+                  <thead className="bg-slate-100 font-bold text-slate-700">
+                     <tr>
+                        <th className="py-2 px-2 text-center border-b border-slate-200">월</th>
+                        <th className="py-2 px-2 border-b border-slate-200">일사량 (hr)</th>
+                        <th className="py-2 px-2 border-b border-slate-200">발전량 (kWh)</th>
+                        <th className="py-2 px-2 text-slate-500 border-b border-slate-200">SMP 수익</th>
+                        <th className="py-2 px-2 text-slate-500 border-b border-slate-200">REC 수익</th>
+                        <th className="py-2 px-2 text-blue-700 border-b border-slate-200">총 예상 수익</th>
+                     </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                     {monthlyData.map((row) => {
+                        const smpRev = row.gen * econ.smp;
+                        const recRev = (row.gen / 1000) * econ.recPrice * econ.recWeight;
+                        return (
+                           <tr key={row.month} className="hover:bg-slate-50">
+                              <td className="py-2 px-2 text-center font-bold text-slate-700">{row.month}월</td>
+                              <td className="py-2 px-2 text-slate-600">{row.insolation.toFixed(2)}</td>
+                              <td className="py-2 px-2 font-bold text-slate-800">{row.gen.toLocaleString()}</td>
+                              <td className="py-2 px-2 text-slate-500">{formatMoney(smpRev)}</td>
+                              <td className="py-2 px-2 text-slate-500">{formatMoney(recRev)}</td>
+                              <td className="py-2 px-2 font-bold text-blue-700">{formatMoney(smpRev + recRev)}</td>
+                           </tr>
+                        );
+                     })}
+                     <tr className="bg-slate-100 font-bold border-t-2 border-slate-300">
+                        <td className="py-2 px-2 text-center text-slate-900">합계</td>
+                        <td className="py-2 px-2 text-slate-900">-</td>
+                        <td className="py-2 px-2 text-slate-900">{sim.yearlyData[0]?.annualGeneration.toLocaleString() || 0}</td>
+                        <td className="py-2 px-2 text-slate-900" colSpan={3}>{formatMoney(sim.yearlyData[0]?.grossRevenue || 0)}</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
          </div>
 
          {/* Loss Diagram */}
-         <div className="flex-1 border border-slate-200 rounded-lg p-4 flex flex-col">
-            <h3 className="text-xs font-bold text-slate-900 uppercase mb-4">시스템 손실 다이어그램 (Loss Waterfall)</h3>
-            <div className="flex-1 flex items-center justify-center">
-               <div style={{ width: 600, height: 350 }}>
-                  <BarChart width={600} height={350} data={lossData} layout="vertical" margin={{ top: 5, right: 50, left: 60, bottom: 5 }}>
+         <div className="border border-slate-200 rounded-lg p-4 flex flex-col mb-4">
+            <h3 className="text-xs font-bold text-slate-900 uppercase mb-2">시스템 손실 다이어그램 (Loss Waterfall)</h3>
+            <div className="flex items-center justify-start pl-4">
+               <div style={{ width: '100%', height: 200 }}>
+                  <BarChart width={600} height={200} data={lossData} layout="vertical" margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
                      <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
                      <XAxis type="number" hide />
-                     <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 11 }} interval={0} />
-                     <Bar dataKey="value" barSize={20} label={{ position: 'right', fontSize: 11, fontWeight: 'bold', formatter: (v: number) => v.toFixed(1) + '%' }} isAnimationActive={false}>
+                     <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 11, fill: '#475569', fontWeight: 500 }} interval={0} />
+                     <Bar dataKey="value" barSize={20} label={{ position: 'right', fontSize: 11, fontWeight: 'bold', fill: '#334155', formatter: (v: number) => v.toFixed(1) + '%' }} isAnimationActive={false} radius={[0, 4, 4, 0]}>
                         {lossData.map((entry, index) => (
                            <Cell key={`cell-${index}`} fill={entry.fill} />
                         ))}
@@ -573,11 +590,16 @@ const PageGenerationData = ({ sim, config, econ, pageNum, totalPages }: { sim: S
          </div>
 
          {/* Disclaimer Footer (New) */}
-         <div className="mt-4 pt-2 border-t border-slate-300 text-[8px] text-slate-400 text-justify leading-tight">
-            <strong>[면책 조항 (Disclaimer)]</strong> 본 시뮬레이션 리포트는 입력된 가정치(기상 데이터, 장비 사양, 경제 지표 등)를 바탕으로 추정한 예상 결과이며, 실제 발전량 및 수익성을 보증하지 않습니다.
-            실제 결과는 현장의 기후 조건, 음영, 설비의 유지관리 상태, 계통 상황, 정부 정책 및 전력 시장 가격 변동 등 다양한 요인에 따라 달라질 수 있습니다.
-            따라서 본 리포트는 사업 타당성 검토를 위한 참고 자료로만 활용되어야 하며, 최종 투자는 전문가의 상세 검토를 거쳐 결정하시기 바랍니다.
-            Solar Array Architect는 본 리포트의 결과 활용에 따른 어떠한 법적 책임도 지지 않습니다.
+         <div className="mt-2">
+            <div className="bg-slate-50 border border-slate-200 rounded p-3">
+               <strong className="block text-[9px] text-slate-500 mb-1">[면책 조항 (Disclaimer)]</strong>
+               <p className="text-[8px] text-slate-400 text-justify leading-relaxed">
+                  본 시뮬레이션 리포트는 입력된 가정치(기상 데이터, 장비 사양, 경제 지표 등)를 바탕으로 추정한 예상 결과이며, 실제 발전량 및 수익성을 보증하지 않습니다.
+                  실제 결과는 현장의 기후 조건, 음영, 설비의 유지관리 상태, 계통 상황, 정부 정책 및 전력 시장 가격 변동 등 다양한 요인에 따라 달라질 수 있습니다.
+                  따라서 본 리포트는 사업 타당성 검토를 위한 참고 자료로만 활용되어야 하며, 최종 투자는 전문가의 상세 검토를 거쳐 결정하시기 바랍니다.
+                  Solar Array Architect는 본 리포트의 결과 활용에 따른 어떠한 법적 책임도 지지 않습니다.
+               </p>
+            </div>
          </div>
 
          <ReportFooter page={pageNum} total={totalPages} confName={config.name} />
@@ -602,21 +624,21 @@ const PageBOM = ({ config, items, pageNum, totalPages, subIndex, totalSubPages }
                <table className="w-full text-[10px] text-left border-collapse table-fixed">
                   <thead className="bg-slate-100 font-bold text-slate-700">
                      <tr>
-                        <th className="p-2 w-[15%]">Category</th>
-                        <th className="p-2 w-[20%]">Item Name</th>
-                        <th className="p-2 w-[50%]">Specification</th>
-                        <th className="p-2 w-[7%] text-right">Qty</th>
-                        <th className="p-2 w-[8%] text-center">Unit</th>
+                        <th className="p-2 w-[15%] border-b border-slate-200">Category</th>
+                        <th className="p-2 w-[20%] border-b border-slate-200">Item Name</th>
+                        <th className="p-2 w-[50%] border-b border-slate-200">Specification</th>
+                        <th className="p-2 w-[7%] text-right border-b border-slate-200">Qty</th>
+                        <th className="p-2 w-[8%] text-center border-b border-slate-200">Unit</th>
                      </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                      {items.map((item, idx) => (
-                        <tr key={idx}>
-                           <td className="p-2 font-medium text-slate-500 break-words">{item.category}</td>
-                           <td className="p-2 font-bold text-slate-800 break-words">{item.item}</td>
-                           <td className="p-2 text-slate-600 font-mono tracking-tight text-[9px] break-words whitespace-pre-wrap">{item.spec}</td>
-                           <td className="p-2 text-right font-bold whitespace-nowrap">{typeof item.qty === 'number' ? item.qty.toLocaleString() : item.qty}</td>
-                           <td className="p-2 text-center text-slate-400 whitespace-nowrap">{item.unit}</td>
+                        <tr key={idx} className="hover:bg-slate-50">
+                           <td className="p-2 font-medium text-slate-500 break-words align-top">{item.category}</td>
+                           <td className="p-2 font-bold text-slate-800 break-words align-top">{item.item}</td>
+                           <td className="p-2 text-slate-600 font-mono tracking-tight text-[9px] break-words whitespace-pre-wrap align-top">{item.spec}</td>
+                           <td className="p-2 text-right font-bold whitespace-nowrap align-top">{typeof item.qty === 'number' ? item.qty.toLocaleString() : item.qty}</td>
+                           <td className="p-2 text-center text-slate-400 whitespace-nowrap align-top">{item.unit}</td>
                         </tr>
                      ))}
                   </tbody>
@@ -639,37 +661,41 @@ const PageProcess = ({ config, steps, pageNum, totalPages, subIndex, totalSubPag
          />
 
          {subIndex === 0 && (
-            <div className="mb-6 p-4 bg-slate-50 border border-slate-200 rounded text-xs text-slate-600 leading-relaxed shrink-0">
+            <div className="mb-6 p-4 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 leading-relaxed shrink-0 shadow-sm">
+               <strong className="block text-slate-900 mb-1">📌 가이드라인</strong>
                본 사업의 성공적인 수행을 위한 단계별 인허가 및 공사 절차 가이드라인입니다.
                주요 마일스톤(Milestone)을 준수하여 프로젝트 리스크를 최소화하시기 바랍니다.
             </div>
          )}
 
-         <div className="flex-1 relative overflow-hidden px-4">
+         <div className="flex-1 relative overflow-hidden px-6">
             {/* Timeline Line */}
-            <div className="absolute left-8 top-4 bottom-4 w-0.5 bg-slate-200"></div>
+            <div className="absolute left-10 top-4 bottom-4 w-0.5 bg-slate-200"></div>
 
-            <div className="space-y-4">
+            <div className="space-y-4"> {/* Reduced spacing between steps */}
                {steps.map((step, idx) => (
-                  <div key={step.id} className="relative pl-20">
+                  <div key={step.id} className="relative pl-24">
                      {/* Timeline Dot centered on line */}
-                     <div className={`absolute left-5 top-1 w-6 h-6 rounded-full border-2 border-white shadow-sm flex items-center justify-center text-[10px] font-bold text-white ${step.color.replace('bg-', '!bg-')}`}>
-                        {(subIndex * 5) + idx + 1}
+                     <div className={`absolute left-7 top-1 w-7 h-7 rounded-full border-4 border-white shadow-md flex items-center justify-center text-[11px] font-bold text-white z-10 ${step.color.replace('bg-', '!bg-')}`}>
+                        {(subIndex * 4) + idx + 1}
                      </div>
 
-                     <div className="flex items-start">
-                        <div className="w-24 flex-shrink-0 pt-1">
-                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{step.phase}</span>
+                     <div className="flex items-start group">
+                        <div className="w-28 flex-shrink-0 pt-1.5 absolute left-[-80px] text-right pr-6">
+                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block group-hover:text-slate-600 transition-colors">{step.phase}</span>
                         </div>
-                        <div className="flex-1 pb-4 border-b border-slate-100 last:border-0">
-                           <h4 className="text-sm font-bold text-slate-900 mb-1">{step.title}</h4>
-                           <p className="text-[10px] text-slate-500 mb-2 leading-relaxed">{step.description}</p>
-                           <div className="bg-slate-50 p-3 rounded border border-slate-100">
-                              <ul className="text-[9px] text-slate-600 space-y-1.5">
+                        <div className="flex-1 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                           <h4 className="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+                              {step.title}
+                              <span className={`text-[9px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-normal`}>{step.duration}</span>
+                           </h4>
+                           <p className="text-xs text-slate-500 mb-2 leading-relaxed">{step.description}</p>
+                           <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 hover:border-slate-200 transition-colors">
+                              <ul className="text-[10px] text-slate-600 space-y-1">
                                  {step.details.map((d, i) => (
-                                    <li key={i} className="flex items-start gap-1.5">
-                                       <span className="w-1 h-1 rounded-full bg-slate-400 mt-1.5 flex-shrink-0"></span>
-                                       <span className="leading-tight">{d}</span>
+                                    <li key={i} className="flex items-start gap-2">
+                                       <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1 flex-shrink-0"></span>
+                                       <span className="leading-relaxed">{d}</span>
                                     </li>
                                  ))}
                               </ul>
@@ -702,7 +728,7 @@ export const ReportSection = ({ onClose }: { onClose: () => void }) => {
 
    // 1. Process Steps Chunking
    // Reverted chunk size to 5 to prevent truncation
-   const processChunks = useMemo<ProcessStep[][]>(() => chunkArray(PROCESS_STEPS, 5), []);
+   const processChunks = useMemo<ProcessStep[][]>(() => chunkArray(PROCESS_STEPS, 4), []);
 
    // 2. BOM Chunking
    const bomChunks = useMemo<BOMItem[][]>(() => chunkArray(results.bom, 20), [results.bom]);
@@ -768,7 +794,7 @@ export const ReportSection = ({ onClose }: { onClose: () => void }) => {
 
             {/* Report Content Container */}
             <div className="flex justify-center bg-slate-500/50 p-8 rounded-lg min-h-screen overflow-auto">
-               <div className="origin-top transform scale-95 md:scale-100 transition-transform">
+               <div className={`origin-top transition-transform ${isGenerating ? '' : 'transform scale-95 md:scale-100'}`}>
                   <div
                      id="report-content"
                      className={`flex flex-col ${isGenerating ? 'gap-0 bg-white' : 'gap-8 bg-slate-500/10'}`}

@@ -4,18 +4,35 @@ import { InputSection } from './components/InputSection';
 import { ResultSection } from './components/ResultSection';
 import { ReportSection } from './components/ReportSection';
 
+/**
+ * 메인 애플리케이션 컴포넌트 (Main Application Component)
+ * 
+ * 전체 애플리케이션의 레이아웃과 주요 섹션을 구성합니다.
+ * 반응형 디자인을 적용하여 데스크탑과 모바일 환경 모두를 지원합니다.
+ * 
+ * 주요 구성 요소:
+ * 1. 헤더 (Header): 로고, 제목, 리포트/문의 버튼
+ * 2. 메인 컨텐츠 (Main Content):
+ *    - 좌측: 입력 패널 (InputSection) - 설계 변수 입력
+ *    - 우측: 결과 대시보드 (ResultSection) - 실시간 분석 결과
+ * 3. 모바일 네비게이션 (Mobile Nav): 탭 전환 (입력 <-> 결과)
+ * 4. 모달 (Modals): 리포트 미리보기, 문의하기
+ */
 const App: React.FC = () => {
-   const [isContactOpen, setIsContactOpen] = useState(false);
-   const [isReportOpen, setIsReportOpen] = useState(false);
+   // --- 상태 관리 (State Management) ---
+   const [isContactOpen, setIsContactOpen] = useState(false); // 문의하기 모달 상태
+   const [isReportOpen, setIsReportOpen] = useState(false);   // 리포트 모달 상태
 
+   // 모바일 화면에서의 활성 탭 상태 ('input' 또는 'result')
    const [activeMobileTab, setActiveMobileTab] = useState<'input' | 'result'>('input');
 
    return (
       <div className="flex flex-col min-h-screen pb-16 lg:pb-0">
 
-         {/* Header */}
+         {/* --- 헤더 섹션 (Header Section) --- */}
          <header className="bg-slate-900/90 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-white/10">
             <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 h-32 flex items-center justify-between">
+               {/* 로고 및 타이틀 */}
                <div className="flex items-center space-x-6 group cursor-pointer">
                   <div className="transition-transform group-hover:scale-105 duration-300">
                      <img src="/logo.png" alt="Logo" className="w-32 h-32 object-contain" />
@@ -28,6 +45,7 @@ const App: React.FC = () => {
                   </div>
                </div>
 
+               {/* 우측 상단 액션 버튼 그룹 */}
                <div className="flex items-center gap-3">
                   <button
                      onClick={() => setIsReportOpen(true)}
@@ -52,17 +70,19 @@ const App: React.FC = () => {
             </div>
          </header>
 
-         {/* Main Content */}
+         {/* --- 메인 컨텐츠 영역 (Main Content Area) --- */}
          <main className="flex-grow max-w-[1920px] w-full mx-auto p-4 lg:p-6 flex flex-col lg:flex-row gap-6">
 
-            {/* Left: Input Panel */}
+            {/* 좌측: 입력 패널 (Input Panel) */}
+            {/* 데스크탑에서는 항상 보이고, 모바일에서는 'input' 탭일 때만 보임 */}
             <section className={`w-full lg:w-[380px] xl:w-[420px] flex-shrink-0 flex-col gap-6 ${activeMobileTab === 'input' ? 'flex' : 'hidden lg:flex'}`}>
                <div className="glass-panel p-6 h-full overflow-y-auto custom-scrollbar">
                   <InputSection />
                </div>
             </section>
 
-            {/* Right: Dashboard */}
+            {/* 우측: 결과 대시보드 (Result Dashboard) */}
+            {/* 데스크탑에서는 항상 보이고, 모바일에서는 'result' 탭일 때만 보임 */}
             <section className={`flex-grow flex-col gap-6 min-w-0 ${activeMobileTab === 'result' ? 'flex' : 'hidden lg:flex'}`}>
                <div className="glass-panel p-6 h-full">
                   <ResultSection />
@@ -71,7 +91,7 @@ const App: React.FC = () => {
 
          </main>
 
-         {/* Mobile Bottom Navigation */}
+         {/* --- 모바일 하단 네비게이션 (Mobile Bottom Navigation) --- */}
          <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-around items-center z-50 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
             <button
                onClick={() => setActiveMobileTab('input')}
@@ -94,7 +114,9 @@ const App: React.FC = () => {
             </button>
          </div>
 
-         {/* Contact Modal */}
+         {/* --- 모달 컴포넌트 (Modals) --- */}
+
+         {/* 문의하기 모달 */}
          {isContactOpen && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-200" onClick={() => setIsContactOpen(false)}>
                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all border border-white/20" onClick={e => e.stopPropagation()}>
@@ -142,7 +164,7 @@ const App: React.FC = () => {
             </div>
          )}
 
-         {/* Report Modal */}
+         {/* 리포트 모달 */}
          {isReportOpen && (
             <ReportSection onClose={() => setIsReportOpen(false)} />
          )}

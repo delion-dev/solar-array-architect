@@ -13,6 +13,7 @@ export interface ProcessStep {
   description: string;
   icon: React.ReactNode;
   color: string;
+  duration: string; // 소요 기간
   details: string[]; // 주요 업무 내용
   documents?: DocItem[]; // 필요 서류 목록
 }
@@ -36,6 +37,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     description: '사업 부지의 일사량, 계통 연계 용량, 법적 규제 사항을 분석하여 사업성을 판단합니다.',
     icon: <IconSearch />,
     color: 'bg-blue-500',
+    duration: '1-2주',
     details: [
       '일사량 및 지리적 여건 분석',
       '한전 계통 연계 용량 확인 (선로 여유분)',
@@ -54,6 +56,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     description: '지자체(3MW 미만) 또는 산업부(3MW 이상)에 전기사업(발전사업) 허가를 신청합니다. (처리기간: 약 60일)',
     icon: <IconLicense />,
     color: 'bg-indigo-500',
+    duration: '약 60일',
     details: [
       '사업 허가 신청서 작성 및 접수',
       '사업 계획 설명회 (필요 시)',
@@ -76,6 +79,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     description: '토지의 형질 변경 및 공작물 설치에 대한 허가를 득합니다. 가장 까다롭고 중요한 절차입니다.',
     icon: <IconLicense />,
     color: 'bg-indigo-600',
+    duration: '3-4개월',
     details: [
       '토목/건축 설계 도서 작성',
       '소규모 환경영향평가 (면적에 따라)',
@@ -97,6 +101,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     description: '허가증을 기반으로 금융기관 PF(Project Financing) 대출을 일으키고 시공사(EPC)와 계약을 체결합니다.',
     icon: <IconContract />,
     color: 'bg-violet-600',
+    duration: '1-2개월',
     details: [
       '금융기관 대출 신청 및 심사 (PF)',
       'EPC (설계·조달·시공) 계약 체결',
@@ -117,6 +122,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     description: '구체적인 시공 계획, 공사 기간, 감리 배치 현황을 인허가 관청에 신고하여 수리받습니다.',
     icon: <IconLicense />,
     color: 'bg-purple-500',
+    duration: '약 14일',
     details: [
       '실시설계 및 구조안전검토 완료',
       '공사계획 신고 (지자체/산업부)',
@@ -139,6 +145,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     description: '한전(KEPCO)과 전력수급계약(PPA)을 맺고 송·배전 설비 이용을 신청하는 단계입니다.',
     icon: <IconBolt />,
     color: 'bg-purple-600',
+    duration: '약 1개월',
     details: [
       '계통연계 용량 사전 점검 (154kV/22.9kV D.L 여유 확인)',
       '송·배전용 전기설비 이용신청 (신규/증설)',
@@ -160,6 +167,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     description: '토목, 구조물, 전기 공사를 순차적으로 진행하며 한전 연계 공사도 병행됩니다.',
     icon: <IconConstruction />,
     color: 'bg-amber-500',
+    duration: '2-3개월',
     details: [
       '토목 공사: 기초, 배수로, 바닥 정비',
       '구조물 설치: 포스맥(PosMAC) 지지대 조립',
@@ -174,6 +182,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     description: '토목 및 구조물 공사가 개발행위 허가 내용대로 완료되었는지 지자체의 확인을 받습니다.',
     icon: <IconCivilCheck />,
     color: 'bg-teal-500',
+    duration: '약 14일',
     details: [
       '준공 측량 (지적 공사)',
       '준공 검사 신청서 제출 (지자체)',
@@ -194,6 +203,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     description: '한국전기안전공사(KESCO)로부터 전기 설비의 안전성을 검증받습니다. 합격 시 전력 공급이 가능해집니다.',
     icon: <IconCheck />,
     color: 'bg-emerald-500',
+    duration: '약 7일',
     details: [
       '사용전 검사 신청 (희망일 7일 전)',
       '현장 검사 (절연, 접지, 보호협조 등)',
@@ -215,6 +225,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     description: '지자체에 사업 개시를 공식적으로 신고하고 상업 운전을 시작합니다.',
     icon: <IconLicense />,
     color: 'bg-emerald-600',
+    duration: '즉시',
     details: [
       '사업개시 신고서 제출 (지자체)',
       '한전 PPA 계약 체결 (상업운전 개시)',
@@ -235,6 +246,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
     description: '한국에너지공단에 설비를 등록하여 REC 발급 자격을 획득하고, 전력 거래 및 유지보수를 수행합니다.',
     icon: <IconRPS />,
     color: 'bg-green-600',
+    duration: '상시',
     details: [
       'RPS 종합지원시스템 설비확인 신청 (1개월 내)',
       '설비 확인서 발급 (REC 발급 자격 획득)',
@@ -269,7 +281,7 @@ export const ProcessGuideTab = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-      
+
       {/* Header Info */}
       <div className="bg-gradient-to-r from-slate-800 to-slate-700 text-white p-6 rounded-xl shadow-md">
         <div className="flex justify-between items-start">
@@ -290,19 +302,19 @@ export const ProcessGuideTab = () => {
 
       {/* Quick Navigation Bar (Horizontal Timeline) */}
       <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm overflow-x-auto">
-         <div className="flex justify-between min-w-[800px] relative px-4">
-            {/* Horizontal Line */}
-            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-100 -z-0 mx-8"></div>
-            
-            {PROCESS_STEPS.map((step, idx) => (
-               <div key={step.id} className="relative z-10 flex flex-col items-center group cursor-pointer" onClick={() => scrollToStep(step.id)}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md transition-all duration-200 ${step.color} ${activeStep === step.id ? 'ring-2 ring-offset-1 ring-accent scale-110' : 'opacity-80 group-hover:opacity-100 group-hover:scale-110'}`}>
-                     {idx + 1}
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-500 mt-2 bg-white px-1 whitespace-nowrap group-hover:text-slate-800">{step.phase}</span>
-               </div>
-            ))}
-         </div>
+        <div className="flex justify-between min-w-[800px] relative px-4">
+          {/* Horizontal Line */}
+          <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-100 -z-0 mx-8"></div>
+
+          {PROCESS_STEPS.map((step, idx) => (
+            <div key={step.id} className="relative z-10 flex flex-col items-center group cursor-pointer" onClick={() => scrollToStep(step.id)}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md transition-all duration-200 ${step.color} ${activeStep === step.id ? 'ring-2 ring-offset-1 ring-accent scale-110' : 'opacity-80 group-hover:opacity-100 group-hover:scale-110'}`}>
+                {idx + 1}
+              </div>
+              <span className="text-[10px] font-bold text-slate-500 mt-2 bg-white px-1 whitespace-nowrap group-hover:text-slate-800">{step.phase}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Vertical Timeline Details */}
@@ -313,11 +325,11 @@ export const ProcessGuideTab = () => {
         <div className="space-y-8">
           {PROCESS_STEPS.map((step, index) => {
             const isActive = activeStep === step.id;
-            
+
             return (
               <div key={step.id} id={step.id} className="relative group scroll-mt-24">
                 {/* Timeline Node */}
-                <div 
+                <div
                   className={`absolute left-0 sm:left-4 -ml-1.5 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white shadow-md z-10 transition-transform duration-200 cursor-pointer ${step.color} ${isActive ? 'scale-110 ring-4 ring-white' : 'group-hover:scale-110'}`}
                   onClick={() => toggleStep(step.id)}
                 >
@@ -326,7 +338,7 @@ export const ProcessGuideTab = () => {
 
                 {/* Content Card */}
                 <div className="ml-12 sm:ml-20">
-                  <div 
+                  <div
                     onClick={() => toggleStep(step.id)}
                     className={`bg-white rounded-lg border transition-all cursor-pointer overflow-hidden shadow-sm hover:shadow-md ${isActive ? 'border-accent ring-1 ring-accent' : 'border-slate-200'}`}
                   >
@@ -334,10 +346,10 @@ export const ProcessGuideTab = () => {
                     <div className="p-4 sm:p-5 flex justify-between items-center">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                           <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${step.color} bg-opacity-10 text-slate-600`}>
-                             Phase {index + 1}
-                           </span>
-                           <span className="text-xs text-slate-400 font-medium">| {step.phase}</span>
+                          <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${step.color} bg-opacity-10 text-slate-600`}>
+                            Phase {index + 1}
+                          </span>
+                          <span className="text-xs text-slate-400 font-medium">| {step.phase}</span>
                         </div>
                         <h3 className="text-lg font-bold text-slate-800">{step.title}</h3>
                         <p className="text-sm text-slate-500 mt-1 line-clamp-1 sm:line-clamp-none">{step.description}</p>
@@ -397,10 +409,10 @@ export const ProcessGuideTab = () => {
           })}
         </div>
       </div>
-      
+
       <div className="bg-slate-100 p-4 rounded-lg text-center text-xs text-slate-500 mt-8">
         ※ 본 가이드는 일반적인 태양광 발전사업 절차를 기준으로 작성되었으며, 지자체 조례 및 현장 여건에 따라 실제 절차와 제출 서류는 달라질 수 있습니다.
-        <br/>참조: 신재생에너지 클라우드 플랫폼 (RECloud)
+        <br />참조: 신재생에너지 클라우드 플랫폼 (RECloud)
       </div>
     </div>
   );

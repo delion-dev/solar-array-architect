@@ -94,7 +94,7 @@ export const DEFAULT_ECONOMIC_CONFIG: EconomicConfig = {
   dailyInsolation: 3.51, // 한국 평균 일조 시간 (3.51시간)
   monthlyInsolation: DEFAULT_MONTHLY_INSOLATION, // 상세 분석용 기본값
   tmyData: [], // TMY 데이터 초기값 (빈 배열)
-  
+
   systemEfficiency: 80, // 종합 시스템 효율 (PR)
   lossFactors: DEFAULT_LOSS_FACTORS, // 상세 손실 계수 기본값 연결
 
@@ -102,14 +102,14 @@ export const DEFAULT_ECONOMIC_CONFIG: EconomicConfig = {
   smp: 130, // 예상 SMP (계통한계가격) 130원/kWh
   recPrice: 60000, // 예상 REC 가격 60,000원
   recWeight: 1.0, // REC 가중치 (일반 부지 1.0, 건축물 1.5)
-  
+
   // 비용 설정 (Cost Factors)
   installationCostPerKw: 1200000, // 시공비: kW당 120만원
   maintenanceCostPerKw: 25000, // 유지보수비: kW당 연 25,000원
   leaseCostPerKw: 40000, // 임대료: kW당 연 40,000원
   inflationRate: 2.5, // 물가상승률 2.5% 가정 (New)
   vatIncluded: false, // 부가세 별도
-  
+
   // 금융 설정 (Financial Factors)
   equityPercent: 20, // 자기자본 20% (대출 80% 가정)
   loanInterestRate: 1.75, // 대출 이자율 1.75%
