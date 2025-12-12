@@ -33,7 +33,9 @@
    ```bash
    npm run preview
    ```
-
+   
+5. **실행 예**
+   브라우저에서 `https://poetic-choux-ba19e4.netlify.app/`으로 접속하세요.
 ## 🛠️ 주요 기능
 
 - **기술적 검토 (Engineering)**: 태양광 어레이 직/병렬 계산, 인버터 매칭, 전압 강하 분석
