@@ -19,7 +19,19 @@ const waitForImages = (element: HTMLElement): Promise<void> => {
       img.addEventListener('error', handleLoad);
     });
   });
-  return Promise.all(promises).then(() => {});
+  return Promise.all(promises).then(() => { });
+};
+
+/**
+ * Ensures all fonts are fully loaded before capturing.
+ * This prevents line-height calculation errors due to font loading timing.
+ */
+const ensureFontsLoaded = async (): Promise<void> => {
+  if (document.fonts) {
+    await document.fonts.ready;
+    // Wait an extra 100ms for good measure
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
 };
 
 /**
@@ -71,10 +83,10 @@ export const generatePDF = async (elementId: string, fileName: string): Promise<
     const imgData = canvas.toDataURL('image/png');
     // jsPDF instantiation (Portrait, mm, A4)
     const pdf = new jsPDF('p', 'mm', 'a4');
-    
+
     const pdfWidth = pdf.internal.pageSize.getWidth();   // 210mm
     const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
-    
+
     const imgWidth = pdfWidth;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
@@ -89,12 +101,12 @@ export const generatePDF = async (elementId: string, fileName: string): Promise<
     // Loop for subsequent pages
     // Fix: Use a small buffer (e.g., 2mm) instead of > 0 to prevent blank pages 
     // caused by sub-pixel rounding errors or CSS/PDF unit mismatches.
-    while (heightLeft > 2) { 
-      position = heightLeft - imgHeight; 
-      
+    while (heightLeft > 2) {
+      position = heightLeft - imgHeight;
+
       pdf.addPage();
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      
+
       heightLeft -= pdfHeight;
     }
 
@@ -108,3 +120,87 @@ export const generatePDF = async (elementId: string, fileName: string): Promise<
     return false;
   }
 };
+
+/**
+ * Generates a PDF by capturing each page individually (PER-PAGE APPROACH).
+ * This method provides better alignment and prevents rendering issues.
+ * @param pageIds Array of HTML element IDs representing each page
+ * @param fileName The name of the file to save
+ * @param onProgress Optional callback for progress updates (current, total)
+ */
+export const generatePDFPerPage = async (
+  pageIds: string[],
+  fileName: string,
+  onProgress?: (current: number, total: number) => void
+): Promise<boolean> => {
+  try {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = 210;
+    const pdfHeight = 297;
+
+    for (let i = 0; i < pageIds.length; i++) {
+      // Progress callback
+      if (onProgress) onProgress(i + 1, pageIds.length);
+
+      // Get the page element
+      const element = document.getElementById(pageIds[i]);
+      if (!element) {
+        console.warn(`Page ${pageIds[i]} not found, skipping`);
+        continue;
+      }
+
+      // Ensure images are loaded
+      await waitForImages(element);
+
+      // Ensure fonts are loaded (critical for line-height calculation)
+      await ensureFontsLoaded();
+
+      // Capture with high quality
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
+        logging: false,
+        backgroundColor: '#ffffff',
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        imageTimeout: 15000,
+        // Force fixed positioning context
+        scrollY: -window.scrollY,
+        scrollX: -window.scrollX,
+        // Custom font loading
+        onclone: (clonedDoc) => {
+          const style = clonedDoc.createElement('style');
+          style.textContent = `
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+          `;
+          clonedDoc.head.appendChild(style);
+        }
+      });
+
+      // Convert to image
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      // Add page (first iteration doesn't need addPage)
+      if (i > 0) pdf.addPage();
+
+      // If image is shorter than A4, center it vertically
+      const yOffset = imgHeight < pdfHeight ? (pdfHeight - imgHeight) / 2 : 0;
+
+      // Add image to PDF
+      pdf.addImage(imgData, 'PNG', 0, yOffset, imgWidth, Math.min(imgHeight, pdfHeight));
+    }
+
+    // Save PDF
+    const finalName = fileName.trim() ? (fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`) : 'Solar_Report.pdf';
+    pdf.save(finalName);
+    return true;
+
+  } catch (error) {
+    console.error('PDF Generation (Per-Page) failed', error);
+    return false;
+  }
+};
+

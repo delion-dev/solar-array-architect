@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '../store';
-import { generatePDF } from '../utils/pdfGenerator';
+import { generatePDF, generatePDFPerPage } from '../utils/pdfGenerator';
 import { StringDiagram } from './results/StringDiagram';
 import { generateConfigurationSummary, calculateInverterGroups } from '../utils/solarCalculator';
 import { ComposedChart, Bar, XAxis, YAxis, CartesianGrid, Area, ReferenceLine, BarChart, Legend, Cell, AreaChart } from 'recharts';
@@ -179,8 +179,19 @@ const PageTwo = ({ results, module, inverter, config, pageNum, totalPages }: { r
          {/* Array Config */}
          <div className="flex gap-8 mb-8 shrink-0">
             <div className="w-1/2 p-5 border border-slate-200 rounded-lg shadow-sm">
-               <h3 className="text-xs font-bold text-slate-900 uppercase mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span> 어레이 구성 (Array Configuration)
+               <h3 className="text-xs font-bold text-slate-900 uppercase mb-3">
+                  <table className="border-collapse">
+                     <tbody>
+                        <tr>
+                           <td className="align-middle pr-2">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                           </td>
+                           <td className="align-middle">
+                              어레이 구성 (Array Configuration)
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
                </h3>
                <DataRow label="직렬 모듈 수 (Series)" value={configuration.seriesModules} unit=" EA" />
                <DataRow label="병렬 스트링 수 (Parallel)" value={configuration.parallelStrings} unit=" Circuits" />
@@ -191,8 +202,19 @@ const PageTwo = ({ results, module, inverter, config, pageNum, totalPages }: { r
             </div>
 
             <div className="w-1/2 p-5 bg-slate-50 border border-slate-200 rounded-lg">
-               <h3 className="text-xs font-bold text-slate-900 uppercase mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span> 안전성 검토 (Safety Check)
+               <h3 className="text-xs font-bold text-slate-900 uppercase mb-3">
+                  <table className="border-collapse">
+                     <tbody>
+                        <tr>
+                           <td className="align-middle pr-2">
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                           </td>
+                           <td className="align-middle">
+                              안전성 검토 (Safety Check)
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
                </h3>
                <div className="space-y-3 mt-2">
                   {/* Safety Bars */}
@@ -329,8 +351,19 @@ const PageThree = ({ sim, econ, config, pageNum, totalPages }: { sim: Simulation
 
          {/* Analysis Logic Text */}
          <div className="mb-6 p-4 bg-slate-50 border border-slate-200 rounded-lg shrink-0">
-            <h3 className="text-xs font-bold text-slate-900 uppercase mb-2 flex items-center gap-2">
-               <span className="w-2 h-2 bg-green-500 rounded-full"></span> 분석 산출 근거 (Analysis Logic)
+            <h3 className="text-xs font-bold text-slate-900 uppercase mb-2">
+               <table className="border-collapse">
+                  <tbody>
+                     <tr>
+                        <td className="align-middle pr-2">
+                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        </td>
+                        <td className="align-middle">
+                           분석 산출 근거 (Analysis Logic)
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
             </h3>
             <div className="grid grid-cols-2 gap-4 text-[10px] text-slate-600 leading-relaxed">
                <div>
@@ -575,7 +608,7 @@ const PageGenerationData = ({ sim, config, econ, pageNum, totalPages }: { sim: S
             <h3 className="text-xs font-bold text-slate-900 uppercase mb-2">시스템 손실 다이어그램 (Loss Waterfall)</h3>
             <div className="flex items-center justify-start pl-4">
                <div style={{ width: '100%', height: 200 }}>
-                  <BarChart width={600} height={200} data={lossData} layout="vertical" margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                  <BarChart width={550} height={200} data={lossData} layout="vertical" margin={{ top: 5, right: 60, left: 0, bottom: 5 }}>
                      <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
                      <XAxis type="number" hide />
                      <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 11, fill: '#475569', fontWeight: 500 }} interval={0} />
@@ -677,7 +710,7 @@ const PageProcess = ({ config, steps, pageNum, totalPages, subIndex, totalSubPag
                   <div key={step.id} className="relative pl-24">
                      {/* Timeline Dot centered on line */}
                      <div className={`absolute left-7 top-1 w-7 h-7 rounded-full border-4 border-white shadow-md flex items-center justify-center text-[11px] font-bold text-white z-10 ${step.color.replace('bg-', '!bg-')}`}>
-                        {(subIndex * 4) + idx + 1}
+                        <span style={{ lineHeight: '1', marginTop: '-3px' }}>{(subIndex * 4) + idx + 1}</span>
                      </div>
 
                      <div className="flex items-start group">
@@ -691,14 +724,20 @@ const PageProcess = ({ config, steps, pageNum, totalPages, subIndex, totalSubPag
                            </h4>
                            <p className="text-xs text-slate-500 mb-2 leading-relaxed">{step.description}</p>
                            <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 hover:border-slate-200 transition-colors">
-                              <ul className="text-[10px] text-slate-600 space-y-1">
-                                 {step.details.map((d, i) => (
-                                    <li key={i} className="flex items-start gap-2">
-                                       <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1 flex-shrink-0"></span>
-                                       <span className="leading-relaxed">{d}</span>
-                                    </li>
-                                 ))}
-                              </ul>
+                              <table className="w-full border-collapse" style={{ fontSize: '10px', color: '#475569', lineHeight: '16px' }}>
+                                 <tbody>
+                                    {step.details.map((d, i) => (
+                                       <tr key={i}>
+                                          <td className="w-4" style={{ verticalAlign: 'top', paddingRight: '8px', lineHeight: '16px' }}>
+                                             <span style={{ color: '#94a3b8', fontSize: '14px', lineHeight: '16px', display: 'inline-block', width: '6px', textAlign: 'center' }}>•</span>
+                                          </td>
+                                          <td style={{ verticalAlign: 'top', lineHeight: '16px', paddingBottom: i === step.details.length - 1 ? '0' : '4px' }}>
+                                             {d}
+                                          </td>
+                                       </tr>
+                                    ))}
+                                 </tbody>
+                              </table>
                            </div>
                         </div>
                      </div>
@@ -741,9 +780,28 @@ export const ReportSection = ({ onClose }: { onClose: () => void }) => {
    const handleDownload = async () => {
       if (!fileName) return alert("파일명 입력 필요");
       setIsGenerating(true);
+
+      // Build array of page IDs
+      const pageIds = [
+         'report-page-1',
+         'report-page-2',
+         'report-page-3',
+         'report-page-4',
+         'report-page-5',
+         'report-page-6',
+         ...bomChunks.map((_, i) => `report-page-bom-${i}`),
+         ...processChunks.map((_, i) => `report-page-process-${i}`)
+      ];
+
       // UI 업데이트 (Gap 제거) 적용을 위한 지연
       setTimeout(async () => {
-         const success = await generatePDF('report-content', fileName);
+         const success = await generatePDFPerPage(
+            pageIds,
+            fileName,
+            (current, total) => {
+               console.log(`Generating page ${current}/${total}`);
+            }
+         );
          if (!success) alert("PDF 생성 중 오류가 발생했습니다.");
          setIsGenerating(false);
       }, 500);
@@ -800,38 +858,38 @@ export const ReportSection = ({ onClose }: { onClose: () => void }) => {
                      className={`flex flex-col ${isGenerating ? 'gap-0 bg-white' : 'gap-8 bg-slate-500/10'}`}
                   >
                      {/* Page 1: Executive Summary */}
-                     <div className={`${isGenerating ? '' : 'shadow-2xl'}`}>
+                     <div id="report-page-1" className={`${isGenerating ? '' : 'shadow-2xl'}`}>
                         <PageOne config={config} module={module} inverter={inverter} summaryText={summaryText} date={dateStr} pageNum={1} totalPages={totalPages} />
                      </div>
 
                      {/* Page 2: Engineering */}
-                     <div className={`${isGenerating ? '' : 'shadow-2xl'}`}>
+                     <div id="report-page-2" className={`${isGenerating ? '' : 'shadow-2xl'}`}>
                         <PageTwo results={results} module={module} inverter={inverter} config={config} pageNum={2} totalPages={totalPages} />
                      </div>
 
                      {/* Page 3: Economics Overview */}
-                     <div className={`${isGenerating ? '' : 'shadow-2xl'}`}>
+                     <div id="report-page-3" className={`${isGenerating ? '' : 'shadow-2xl'}`}>
                         <PageThree sim={simulationResults} econ={economicConfig} config={config} pageNum={3} totalPages={totalPages} />
                      </div>
 
                      {/* Page 4: Financial Details (New) */}
-                     <div className={`${isGenerating ? '' : 'shadow-2xl'}`}>
+                     <div id="report-page-4" className={`${isGenerating ? '' : 'shadow-2xl'}`}>
                         <PageFinancialDetails sim={simulationResults} config={config} pageNum={4} totalPages={totalPages} />
                      </div>
 
                      {/* Page 5: Generation Analysis (New) */}
-                     <div className={`${isGenerating ? '' : 'shadow-2xl'}`}>
+                     <div id="report-page-5" className={`${isGenerating ? '' : 'shadow-2xl'}`}>
                         <PageGenerationAnalysis sim={simulationResults} config={config} pageNum={5} totalPages={totalPages} />
                      </div>
 
                      {/* Page 6: Generation Data & Loss (New) */}
-                     <div className={`${isGenerating ? '' : 'shadow-2xl'}`}>
+                     <div id="report-page-6" className={`${isGenerating ? '' : 'shadow-2xl'}`}>
                         <PageGenerationData sim={simulationResults} config={config} econ={economicConfig} pageNum={6} totalPages={totalPages} />
                      </div>
 
                      {/* Dynamic BOM Pages */}
                      {bomChunks.map((chunk, idx) => (
-                        <div key={`bom-${idx}`} className={`${isGenerating ? '' : 'shadow-2xl'}`}>
+                        <div key={`bom-${idx}`} id={`report-page-bom-${idx}`} className={`${isGenerating ? '' : 'shadow-2xl'}`}>
                            <PageBOM
                               config={config}
                               items={chunk}
@@ -845,7 +903,7 @@ export const ReportSection = ({ onClose }: { onClose: () => void }) => {
 
                      {/* Dynamic Process Pages */}
                      {processChunks.map((chunk, idx) => (
-                        <div key={`process-${idx}`} className={`${isGenerating ? '' : 'shadow-2xl'}`}>
+                        <div key={`process-${idx}`} id={`report-page-process-${idx}`} className={`${isGenerating ? '' : 'shadow-2xl'}`}>
                            <PageProcess
                               config={config}
                               steps={chunk}
