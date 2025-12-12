@@ -14,17 +14,17 @@ const App: React.FC = () => {
       <div className="flex flex-col min-h-screen pb-16 lg:pb-0">
 
          {/* Header */}
-         <header className="bg-primary/90 backdrop-blur-md text-white shadow-lg sticky top-0 z-50 border-b border-white/10">
-            <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-               <div className="flex items-center space-x-3 group cursor-pointer">
-                  <div className="p-1.5 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
-                     <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+         <header className="bg-slate-900/90 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-white/10">
+            <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 h-32 flex items-center justify-between">
+               <div className="flex items-center space-x-6 group cursor-pointer">
+                  <div className="transition-transform group-hover:scale-105 duration-300">
+                     <img src="/logo.png" alt="Logo" className="w-32 h-32 object-contain" />
                   </div>
                   <div>
-                     <h1 className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300">
+                     <h1 className="text-3xl font-bold tracking-tight text-white">
                         Solar Array Architect
                      </h1>
-                     <p className="text-[10px] text-slate-400 font-medium tracking-wider uppercase">Professional PV Design Solution</p>
+                     <p className="text-sm text-slate-400 font-medium tracking-wider uppercase">Professional PV Design Solution</p>
                   </div>
                </div>
 
