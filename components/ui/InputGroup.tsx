@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip } from './Tooltip';
 
 interface InputGroupProps {
   label: string;
@@ -9,12 +10,13 @@ interface InputGroupProps {
   step?: string;
   placeholder?: string;
   helperFormat?: 'currency' | 'none'; // New prop to toggle currency formatting helper
+  tooltip?: string; // [New] Help text for the tooltip
 }
 
 const formatKoreanNumber = (val: number | string): string | null => {
   const num = Number(val);
   if (isNaN(num) || num === 0) return null;
-  
+
   // 1억 이상
   if (num >= 100000000) {
     const uk = Math.floor(num / 100000000);
@@ -29,14 +31,17 @@ const formatKoreanNumber = (val: number | string): string | null => {
   return `${num.toLocaleString()}원`;
 };
 
-export const InputGroup: React.FC<InputGroupProps> = ({ 
-  label, value, onChange, unit, type = "number", step="any", placeholder, helperFormat = 'none' 
+export const InputGroup: React.FC<InputGroupProps> = ({
+  label, value, onChange, unit, type = "number", step = "any", placeholder, helperFormat = 'none', tooltip
 }) => {
   const formattedHelper = helperFormat === 'currency' ? formatKoreanNumber(value) : null;
 
   return (
     <div className="flex flex-col space-y-1">
-      <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">{label}</label>
+      <div className="flex items-center">
+        <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">{label}</label>
+        {tooltip && <Tooltip content={tooltip} />}
+      </div>
       <div className="relative">
         <input
           type={type}

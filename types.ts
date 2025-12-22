@@ -56,6 +56,30 @@ export interface Inverter {
 }
 
 /**
+ * [New] BESS (Battery Energy Storage System) 설정
+ */
+export interface BessConfig {
+  enabled: boolean;
+  capacityKwh: number; // 배터리 용량 (kWh)
+  powerKw: number; // 충방전 출력 (kW)
+  efficiency: number; // 충방전 효율 (%) - 통상 85~95%
+  dod: number; // 방전 심도 (Depth of Discharge, %) - 통상 80~95%
+  costPerKwh: number; // kWh당 배터리 설치 단가 (원)
+  cyclesPerYear: number; // 연간 충방전 횟수 (기본 350회)
+}
+
+/**
+ * [New] BESS 시뮬레이션 결과
+ */
+export interface BessResult {
+  storedEnergyTotal20y: number; // 20년간 총 충전량 (MWh)
+  dischargedEnergyTotal20y: number; // 20년간 총 방전량 (MWh)
+  selfConsumptionIncrease: number; // 자가소비율 증가분 (%)
+  peakShavingBenefit: number; // 피크 컷 편익 (원)
+  bessCapex: number; // 배터리 투자비 (원)
+}
+
+/**
  * 시스템 설계 설정 (System Configuration)
  * 사용자가 입력하는 설치 환경 및 설계 목표값
  */
@@ -64,9 +88,14 @@ export interface SystemConfig {
   targetCapacity: number; // 목표 설치 용량 (kW)
   cableLength: number; // DC 케이블 길이 (m) - 전압 강하 계산용
   cableCrossSection: number; // 케이블 단면적 (mm2) - 전압 강하 계산용
+  cableMaterial?: 'copper' | 'aluminum'; // [New] 케이블 재질 (기본: copper)
+  cableTemp?: number; // [New] 케이블 동작 온도 (°C) - 전압 강하 보정용 (기본 70°C)
   ambientTempWinter: number; // 겨울철 최저 주변 온도 (°C) - Voc 상승 계산용 (기본 -10°C)
   ambientTempSummer: number; // 여름철 모듈 표면 온도 (°C) - 전압 강하 및 기동 전압 체크용 (기본 70°C)
   bifacialGain?: number; // 양면 모듈 이득률 (%) - 기본 0%
+  albedo?: number; // [New] 지면 반사율 (Albedo) - 0.1~0.9 (기본 0.2)
+  mountingHeight?: number; // [New] 설치 높이 (m) - 양면 이득 계산용 (기본 1.0m)
+  bess?: BessConfig; // [New] 배터리 저장 장치 설정
 }
 
 /**
@@ -188,6 +217,7 @@ export interface TMYData {
 export interface LossFactors {
   soiling: number; // 오염 손실 (먼지, 눈 등) - 통상 1~2%
   shading: number; // 음영 손실 (주변 지형지물) - 통상 0.5~3%
+  iamLoss: number; // [New] 입사각 수정 계수(IAM) 손실 - 통상 1.5~3%
   mismatch: number; // 모듈 특성 불일치 손실 - 통상 1~2%
   lid: number; // 초기 광열화 (LID) - 통상 0.5~1.5%
   dcWiring: number; // DC 배선 저항 손실 - 통상 1~1.5%
@@ -206,15 +236,22 @@ export interface EconomicConfig {
   dailyInsolation: number; // 일평균 발전 시간 (시간/일) - 기본 모드용
   monthlyInsolation: number[]; // 월별 일평균 발전 시간 (1월~12월) - 상세 모드(수기)용
   tmyData?: TMYData[]; // TMY 시간별 데이터 (CSV 업로드) - 상세 모드(자동)용
-  
+
   systemEfficiency: number; // 종합 시스템 효율 (PR) - 기존 단순 입력값 (Legacy)
   lossFactors?: LossFactors; // [New] 상세 손실 계수 (고도화)
+  clippingLoss?: number; // [New] 과설계(Peak Cut) 손실률 (%) - 기본 0%
 
   annualDegradation: number; // 연간 모듈 효율 감소율 (%)
   smp: number; // 계통 한계 가격 (SMP) - 원/kWh
   recPrice: number; // 신재생 에너지 공급 인증서 가격 (REC) - 원/REC
   recWeight: number; // REC 가중치 (예: 건축물 1.5, 일반부지 1.0)
-  
+
+  // [New] 글로벌 재무 모델
+  ppaEnabled?: boolean; // PPA(전력판매계약) 사용 여부
+  ppaRate?: number; // PPA 단가 (원/kWh)
+  ppaEscalation?: number; // PPA 단가 연간 상승률 (%)
+  itcPercent?: number; // [New] 투자 세액 공제 (Investment Tax Credit, %) - 예: 미국 30%
+
   // 비용 요소 (Cost Factors)
   installationCostPerKw: number; // kW당 시공 단가 (원) - CAPEX
   maintenanceCostPerKw: number; // kW당 연간 유지보수비 (원) - OPEX
@@ -227,10 +264,12 @@ export interface EconomicConfig {
   loanInterestRate?: number; // 대출 이자율 (%)
   loanTerm?: number; // 대출 기간 (년)
   loanGracePeriod?: number; // 대출 거치 기간 (년) - 이자만 납부하는 기간
+  discountRate?: number; // [New] 할인율 (%) - NPV 계산용 (기본 4.5%)
 
   // 세무 요소 (Tax & Depreciation)
   corporateTaxRate?: number; // 법인세율 (%) - 지방세 포함 (예: 11%, 22%)
   depreciationPeriod?: number; // 감가상각 기간 (년) - 통상 15~20년
+  bess?: BessConfig; // [New] 배터리 저장 장치 설정 (경제성 분석용)
 }
 
 /**
@@ -243,13 +282,13 @@ export interface YearlyPrediction {
   monthlyAvgGeneration: number; // 월 평균 발전량 (kWh)
   grossRevenue: number; // 총 매출 (SMP + REC 수익)
   maintenanceCost: number; // 총 운영비 (유지보수비 + 임대료)
-  
+
   // 금융
   loanPayment?: number; // 대출 원리금 상환액 (금융비용 + 원금)
   interestPayment?: number; // 대출 이자 비용 (원)
   principalPayment?: number; // 대출 원금 상환액 (원)
   remainingPrincipal?: number; // 기말 대출 잔액 (원)
-  
+
   // 세무
   depreciation?: number; // 감가상각비 (비현금성 비용)
   taxableIncome?: number; // 과세표준 (매출 - 운영비 - 이자 - 감가상각)
@@ -294,6 +333,7 @@ export interface LossChartData {
  * 경제성 시뮬레이션 최종 결과
  */
 export interface SimulationResult {
+  systemCapacityKw: number; // 설계 용량 (kW) - 실제 물리적 구성 기반
   yearlyData: YearlyPrediction[]; // 20년치 상세 데이터 배열
   totalGeneration20y: number; // 20년 총 발전량 (MWh)
   totalGrossRevenue: number; // 20년 총 매출 (원)
@@ -303,13 +343,14 @@ export interface SimulationResult {
   totalTax?: number; // 총 납부 세금 (원)
   roi: number; // 투자 수익률 (%) - Return on Investment (or ROE)
   paybackPeriod: number; // 자본 회수 기간 (년) - Payback Period
-  
+
   // [New] 고급 재무 지표 (Advanced Financial Metrics)
   npv: number; // 순현재가치 (Net Present Value)
   lcoe: number; // 균등화 발전원가 (Levelized Cost of Energy)
 
   clippingLossPercent: number; // 과설계(Peak Cut)로 인한 손실율 (%)
-  
+  iamLossPercent: number; // [New] 입사각 수정 계수(IAM)로 인한 손실율 (%)
+
   // 상세 분석 결과
   monthlyGeneration?: number[]; // [상세모드] 1월~12월 발전량 합계 (kWh)
   monthlyAvgInsolation?: number[]; // [상세모드] 1월~12월 일평균 일사량 (hr/day)
@@ -321,4 +362,5 @@ export interface SimulationResult {
   // [New] 고도화 분석 결과
   sensitivityAnalysis: SensitivityResult[]; // 민감도 분석 결과 배열
   lossDiagramData: LossChartData[]; // 손실 다이어그램 데이터
+  bessResult?: BessResult; // [New] 배터리 시뮬레이션 결과
 }

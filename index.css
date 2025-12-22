@@ -12,19 +12,27 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-surface-glass backdrop-blur-md border border-white/50 shadow-xl rounded-2xl;
+    @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-glass rounded-3xl;
   }
-  
+
+  .glass-card {
+    @apply bg-white/40 backdrop-blur-lg border border-white/20 shadow-sm rounded-2xl hover:shadow-md transition-all duration-300;
+  }
+
   .input-field {
-    @apply w-full px-4 py-2 bg-white/80 border border-slate-200 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all duration-200 hover:border-accent/50;
+    @apply w-full px-4 py-2.5 bg-white/60 border border-slate-200/60 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all duration-300 hover:bg-white/80;
   }
 
   .btn-primary {
-    @apply bg-primary text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-primary-light transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95;
+    @apply bg-gradient-to-r from-primary to-primary-dark text-white font-bold px-6 py-3 rounded-xl hover:opacity-90 transition-all duration-300 shadow-primary-glow hover:shadow-primary-glow-hover active:scale-95;
   }
 
   .btn-secondary {
-    @apply bg-white text-slate-700 font-semibold px-6 py-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95;
+    @apply bg-white/80 backdrop-blur-sm text-slate-700 font-bold px-6 py-3 rounded-xl border border-slate-200/60 hover:bg-slate-50 transition-all duration-300 shadow-sm hover:shadow-md active:scale-95;
+  }
+
+  .premium-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600;
   }
 }
 
@@ -39,13 +47,16 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }

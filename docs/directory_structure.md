@@ -12,8 +12,10 @@
 | `components/dashboard/` | 대시보드 시각화 컴포넌트 (KPICard, SafetyGauge 등)가 위치합니다. |
 | `components/results/` | 결과 표시용 뷰 컴포넌트 (EngineeringView, EconomicsView 등)가 위치합니다. |
 | `components/ui/` | 재사용 가능한 공통 UI 컴포넌트 (Card, Button, InputGroup 등)가 위치합니다. |
-| `utils/` | 유틸리티 함수 및 핵심 계산 로직(엔지니어링 및 경제성 분석)이 포함되어 있습니다. |
+| `utils/` | 유틸리티 함수 및 핵심 계산 로직이 포함되어 있습니다. |
+| `utils/solar/` | **Clean Architecture**에 따라 분리된 핵심 태양광 계산 모듈들입니다. |
 | `docs/` | 프로젝트 문서 (아키텍처, 기능 명세서, 설치 가이드 등)가 위치합니다. |
+| `docs/history/` | 프로젝트의 주요 변경 이력(Task, Plan, Walkthrough)이 저장되는 곳입니다. |
 | `App.tsx` | 레이아웃과 섹션을 조율하는 메인 애플리케이션 컴포넌트입니다. |
 | `store.ts` | **Zustand**를 사용한 전역 상태 관리 파일입니다. 데이터 영속성 및 재계산 로직을 처리합니다. |
 | `types.ts` | 도메인 모델(PV 모듈, 인버터, 설정, 결과 등)에 대한 TypeScript 타입 정의 파일입니다. |
@@ -21,7 +23,7 @@
 | `index.css` | 전역 CSS 스타일 및 Tailwind CSS 지시어입니다. |
 | `main.tsx` | React 애플리케이션의 진입점(Entry point)입니다. |
 | `vite.config.ts` | Vite 빌드 도구 설정 파일입니다. |
-| `tailwind.config.js` | Tailwind CSS 설정 파일입니다. |
+| `tailwind.config.js` | Tailwind CSS 설정 파일입니다. 디자인 토큰(그림자, 색상 등)이 정의되어 있습니다. |
 | `tsconfig.json` | TypeScript 컴파일러 설정 파일입니다. |
 | `package.json` | 프로젝트 메타데이터, 스크립트 및 의존성 목록입니다. |
 
@@ -45,12 +47,14 @@
 
 ## `utils/` 디렉토리
 
-UI와 독립적인 비즈니스 로직을 포함합니다.
+UI와 독립적인 비즈니스 로직을 포함하며, `solar/` 서브 디렉토리에 핵심 엔진이 모듈화되어 있습니다.
 
-*   **solarCalculator.ts**: 핵심 엔진으로서 다음 기능을 수행합니다:
-    *   **엔지니어링 계산**: 전압 체크, 스트링 사이징, 인버터 매칭.
-    *   **경제성 분석**: 현금 흐름(Cash Flow) 생성, NPV, ROI, 회수 기간 계산.
-    *   **시뮬레이션**: 환경 요인에 따른 발전량 시뮬레이션.
+*   **solarCalculator.ts**: 외부에서 사용하는 통합 인터페이스(Facade)입니다.
+*   **solar/**: 세분화된 계산 엔진들입니다.
+    *   `engineering.ts`: 전압 체크, 스트링 사이징, 인버터 매칭, 전압 강하 계산.
+    *   `economics.ts`: 현금 흐름(Cash Flow) 생성, NPV, ROI, LCOE, 민감도 분석.
+    *   `parsers.ts`: TMY CSV 데이터 파싱 유틸리티.
+    *   `constants.ts`: 물리적/경제적 상수 정의.
 *   **pdfGenerator.ts**: HTML 요소를 캡처하여 PDF로 변환하는 유틸리티.
 
 ## 주요 파일 (Key Files)
@@ -65,6 +69,7 @@ UI와 독립적인 비즈니스 로직을 포함합니다.
 애플리케이션의 데이터 계약(Contract)을 정의합니다. 주요 인터페이스는 다음과 같습니다:
 *   `PVModule`: 태양광 패널 사양.
 *   `Inverter`: 인버터 사양.
-*   `SystemConfig`: 설계 변수 (케이블 길이, 온도 등).
+*   `SystemConfig`: 설계 변수 (케이블 재질, 온도, 길이 등).
+*   `EconomicConfig`: 경제성 변수 (과설계 손실, 할인율 등).
 *   `CalculationResult`: 엔지니어링 계산 결과.
 *   `SimulationResult`: 경제성 시뮬레이션 결과.

@@ -174,17 +174,27 @@ export const useStore = create<StoreState>()(
       name: 'solar-architect-storage', // localStorage 키 이름
       storage: createJSONStorage(() => localStorage),
       // 저장할 상태 필드 선택 (Partialization)
+      // TMY 데이터는 용량이 크므로 localStorage 저장 대상에서 제외합니다.
       partialize: (state) => ({
         module: state.module,
         inverter: state.inverter,
         config: state.config,
-        economicConfig: state.economicConfig,
+        economicConfig: {
+          ...state.economicConfig,
+          tmyData: undefined // TMY 데이터 제외
+        },
         results: state.results,
-        simulationResults: state.simulationResults,
+        simulationResults: {
+          ...state.simulationResults,
+          tmyData: undefined // 시뮬레이션 결과 내 TMY 데이터 제외 (필요 시)
+        },
         moduleList: state.moduleList,
         inverterList: state.inverterList,
         configList: state.configList,
-        economicConfigList: state.economicConfigList
+        economicConfigList: state.economicConfigList.map(ec => ({
+          ...ec,
+          tmyData: undefined // 리스트 내 모든 항목에서도 TMY 데이터 제외
+        }))
       }),
     }
   )

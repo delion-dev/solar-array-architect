@@ -54,7 +54,9 @@ export const DEFAULT_CONFIG: SystemConfig = {
   cableCrossSection: 6, // 케이블 굵기 6sq (mm2)
   ambientTempWinter: -10, // 한국 겨울철 최저 기온 가정 (-10도)
   ambientTempSummer: 70, // 한국 여름철 모듈 표면 온도 가정 (70도 - 대기온도보다 높음)
-  bifacialGain: 0 // 양면 모듈 이득 없음
+  bifacialGain: 0, // 양면 모듈 이득 없음
+  albedo: 0.2, // [New] 일반 대지 반사율
+  mountingHeight: 1.0 // [New] 표준 설치 높이
 };
 
 // 월별 TMY 일사량 기본값 (한국 평균 근사치)
@@ -78,6 +80,7 @@ export const DEFAULT_MONTHLY_INSOLATION = [
 export const DEFAULT_LOSS_FACTORS: LossFactors = {
   soiling: 2.0, // 오염 손실
   shading: 1.0, // 음영 손실
+  iamLoss: 2.0, // [New] 입사각 수정 계수 손실
   mismatch: 1.5, // 모듈 불일치
   lid: 1.0, // 초기 광열화
   dcWiring: 1.5, // DC 배선
@@ -102,6 +105,22 @@ export const DEFAULT_ECONOMIC_CONFIG: EconomicConfig = {
   smp: 130, // 예상 SMP (계통한계가격) 130원/kWh
   recPrice: 60000, // 예상 REC 가격 60,000원
   recWeight: 1.0, // REC 가중치 (일반 부지 1.0, 건축물 1.5)
+
+  // [New] 글로벌 재무 및 BESS
+  ppaEnabled: false,
+  ppaRate: 150,
+  ppaEscalation: 1.0,
+  itcPercent: 0,
+  discountRate: 4.5,
+  bess: {
+    enabled: false,
+    capacityKwh: 0,
+    powerKw: 0,
+    efficiency: 90,
+    dod: 90,
+    costPerKwh: 500000,
+    cyclesPerYear: 350
+  },
 
   // 비용 설정 (Cost Factors)
   installationCostPerKw: 1200000, // 시공비: kW당 120만원

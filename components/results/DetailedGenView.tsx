@@ -20,6 +20,28 @@ export const DetailedGenView = ({ sim, econ, monthlyGenData, monthlyTableData, h
                 <KPICard label="원유 대체 효과" value={sim.environmentalImpact.oilSubstitution.toLocaleString()} unit="TOE" color="slate" icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>} />
             </div>
 
+            <Card className="border-l-4 border-l-indigo-500 shadow-sm bg-indigo-50/30 overflow-hidden">
+                <CardContent className="p-6">
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
+                        발전량 산정 논리 (Generation Logic)
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-600">
+                        <div className="bg-white/60 backdrop-blur-sm p-4 rounded-xl border border-indigo-100 shadow-sm">
+                            <p className="leading-relaxed">
+                                본 상세 발전량 시뮬레이션은 실제 물리적 어레이 구성인 <strong>설계 용량({(sim.systemCapacityKw || 0).toFixed(2)}kW)</strong>을 기준으로 산정되었습니다.
+                                모듈의 직/병렬 배치와 인버터 매칭 결과가 반영된 수치로, 단순 목표 용량 대비 실제 설치 환경에 가장 근접한 예측치를 제공합니다.
+                            </p>
+                        </div>
+                        <div className="bg-white/60 backdrop-blur-sm p-4 rounded-xl border border-indigo-100 shadow-sm">
+                            <p className="leading-relaxed">
+                                기상청 TMY 데이터 또는 월별 일사량 데이터를 기반으로 하며, <strong>종합 효율(PR)</strong>, <strong>양면 이득(Bifacial Gain)</strong>, <strong>입사각 손실(IAM)</strong> 및 <strong>과설계 손실(Clipping)</strong>이 모두 통합 반영된 결과입니다.
+                            </p>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
             <Card className="shadow-sm">
                 <CardHeader className="py-4 border-b border-slate-100"><CardTitle className="text-base">월별 예상 발전량</CardTitle></CardHeader>
                 <CardContent className="h-80 p-4">

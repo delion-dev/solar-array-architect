@@ -17,11 +17,16 @@ interface EngineeringViewProps {
     onBOMSelect: (item: BOMItem) => void;
 }
 
+/**
+ * [기술적 검토 뷰 컴포넌트]
+ * 태양광 시스템의 전기적 설계 결과, 안전성 검토, 인버터 배치, 자재 내역(BOM)을 시각화합니다.
+ */
 export const EngineeringView = ({
     config, module, inverter, results, inverterGroups, summaryText, totalModuleArea, areaPyeong, onBOMSelect
 }: EngineeringViewProps) => {
     const { configuration, safety, tempValues, bom } = results;
 
+    // 차트용 데이터 가공 (겨울/여름 온도 조건별 전압 비교)
     const chartData = useMemo(() => [
         { name: 'Winter (-10°C)', voc: tempValues.vocWinter, vmp: tempValues.vmpWinter, stringVoc: results.stringVoltageWinter },
         { name: 'Summer (70°C)', voc: tempValues.vocSummer, vmp: tempValues.vmpSummer, stringVoc: results.stringVocSummer }
@@ -29,6 +34,7 @@ export const EngineeringView = ({
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {/* 1. 프로젝트 헤더 섹션 */}
             <div className="border-b border-slate-200 pb-4 mb-2">
                 <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
                     <svg className="w-7 h-7 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
@@ -41,6 +47,7 @@ export const EngineeringView = ({
                 </div>
             </div>
 
+            {/* 2. 최적 어레이 구성 및 안전성 요약 */}
             <Card className="border-l-4 border-l-accent shadow-sm">
                 <CardContent className="pb-4 pt-6">
                     <div className="flex justify-between items-center">
@@ -99,8 +106,10 @@ export const EngineeringView = ({
                 </div>
             </Card>
 
+            {/* 3. 시스템 단선도 시각화 */}
             <StringDiagram seriesCount={configuration.seriesModules} moduleModel={module.model} inverterModel={inverter.model} config={config} inverterCount={results.inverterCount} dcVoltsMin={results.stringVoltageSummer} dcVoltsMax={results.stringVoltageWinter} acVolts={inverter.ratedOutputVoltage} />
 
+            {/* 4. 인버터별 상세 배치표 */}
             <Card className="border-l-4 border-l-indigo-500 shadow-sm">
                 <CardHeader className="py-4 border-b border-slate-100 bg-slate-50/30"><CardTitle className="text-base">인버터별 모듈 배치 및 회로 구성표 (Inverter Array Schedule)</CardTitle></CardHeader>
                 <CardContent className="p-0 overflow-x-auto">
@@ -128,6 +137,7 @@ export const EngineeringView = ({
                 </CardContent>
             </Card>
 
+            {/* 5. 전압 특성 및 안전성 게이지 */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="shadow-sm">
                     <CardHeader className="py-4 border-b border-slate-100"><CardTitle className="text-base">전압 온도 특성 (Voltage-Temp)</CardTitle></CardHeader>
@@ -154,13 +164,23 @@ export const EngineeringView = ({
                     <Card className="shadow-sm">
                         <CardHeader className="py-4 border-b border-slate-100"><CardTitle className="text-base">케이블 전압강하 (Voltage Drop)</CardTitle></CardHeader>
                         <CardContent className="space-y-4 text-sm pt-6 px-6">
-                            <div className="flex justify-between border-b border-slate-100 pb-3"><span className="text-slate-600 font-medium">선정 규격 / 길이</span><span className="font-bold text-slate-800">{config.cableCrossSection} mm² / {config.cableLength} m</span></div>
+                            <div className="flex justify-between border-b border-slate-100 pb-3">
+                                <span className="text-slate-600 font-medium">선정 규격 / 길이</span>
+                                <span className="font-bold text-slate-800">{config.cableCrossSection} mm² / {config.cableLength} m</span>
+                            </div>
+                            <div className="flex justify-between border-b border-slate-100 pb-3">
+                                <span className="text-slate-600 font-medium">재질 / 동작 온도</span>
+                                <span className="font-bold text-slate-800">
+                                    {config.cableMaterial === 'aluminum' ? '알루미늄 (Al)' : '구리 (Cu)'} / {config.cableTemp || 70} °C
+                                </span>
+                            </div>
                             <SafetyGauge label="전압 강하율" current={safety.voltageDrop} limit={3} unit="%" subLabel="Limit: 3%" />
                         </CardContent>
                     </Card>
                 </div>
             </div>
 
+            {/* 6. 주요 자재 내역서 (BOM) */}
             <Card className="border-t-4 border-t-slate-500 shadow-sm">
                 <CardHeader className="py-4 border-b border-slate-100 bg-slate-50/30">
                     <div className="flex justify-between items-center">
