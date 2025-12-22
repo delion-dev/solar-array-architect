@@ -78,3 +78,11 @@ git push -u origin main
     *   `git remote remove origin` 입력 후 다시 연결 명령어를 실행하세요.
 *   **로그인 실패**:
     *   GitHub 자격 증명 관리자 창이 뜨면 브라우저를 통해 로그인하세요.
+*   **Windows에서 `rm -rf` 오류**:
+    *   Windows PowerShell에서는 `rm -rf` 대신 다음 명령어를 사용하세요:
+    ```powershell
+    Remove-Item -Recurse -Force node_modules, package-lock.json
+    ```
+*   **`PermissionDenied` 또는 '액세스가 거부되었습니다' 오류**:
+    *   현재 `npm run dev` (Vite 서버)가 실행 중이기 때문에 파일이 잠겨 있는 상태입니다.
+    *   **해결 방법**: 터미널에서 `Ctrl + C`를 눌러 서버를 중단한 후 다시 삭제 명령어를 실행하세요.
