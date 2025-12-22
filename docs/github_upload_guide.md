@@ -39,6 +39,7 @@ git init
 git add .
 ```
 *   모든 변경 사항을 업로드 대기 상태로 만듭니다.
+*   **[참고] CRLF 경고**: `warning: CRLF will be replaced by LF` 메시지는 Windows와 Linux/Mac 간의 줄바꿈 방식 차이로 발생하는 정상적인 경고입니다. 무시하고 진행하셔도 무방합니다.
 *   *참고: `.gitignore` 파일에 의해 `node_modules` 등 불필요한 파일은 자동으로 제외됩니다.*
 
 ### 3단계: 커밋 (Commit)
